@@ -143,6 +143,7 @@ p { margin: 0; }
 .gloss span { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .gloss .ge { font-family: var(--f-en); font-size: 22px; font-weight: 600; }
 .gloss .gz { font-size: 16px; color: var(--muted); }
+select#voice { font: inherit; font-size: 17px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); flex: 1 1 220px; min-width: 0; max-width: 100%; min-height: 48px; }
 .shelf-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
 @media (min-width: 720px) { .shelf-list { grid-template-columns: 1fr 1fr; } }
 .srow { display: flex; gap: 12px; align-items: center; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 12px; min-width: 0; }
@@ -534,6 +535,7 @@ function load() {
     else if (typeof s.next === "number") n.learned = [...Array(s.next).keys()];
     else return null;
     n.outbox = s.outbox || [];
+    n.voice = s.voice || "";
     n.log = (s.log || []).filter((e) => e.n && e.kind);
     n.learned.forEach((k) => {
       const o = (s.info || {})[k] || {};
@@ -558,9 +560,48 @@ const $ = (s, r = app) => r.querySelector(s);
 const $$ = (s, r = app) => [...r.querySelectorAll(s)];
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 const PLAY = '<svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="40" fill="rgba(255,255,255,.92)"/><path d="M34 26 L60 42 L34 58Z" fill="#1E6B66"/></svg>';
+
+/* ---------- 朗讀聲音：家長選的優先，沒選就自動挑高音質的美式英文 ---------- */
+const VOICE_PREF = ["Ava", "Samantha", "Allison", "Zoe", "Nicky", "Evan", "Nathan", "Tom"];
+function englishVoices() {
+  try { return speechSynthesis.getVoices().filter((v) => /^en[-_]/i.test(v.lang)); } catch (e) { return []; }
+}
+function autoVoice(vs) {
+  const us = vs.filter((v) => /^en[-_]US/i.test(v.lang));
+  const pool = us.length ? us : vs;
+  const hq = (v) => /premium|enhanced|高音質|增強/i.test(v.name);
+  const rank = (v) => { const i = VOICE_PREF.findIndex((p) => v.name.includes(p)); return (hq(v) ? 0 : 100) + (i < 0 ? 50 : i); };
+  return pool.slice().sort((a, b) => rank(a) - rank(b))[0] || null;
+}
+function pickVoice() {
+  const vs = englishVoices();
+  return (st.voice && vs.find((v) => v.voiceURI === st.voice)) || autoVoice(vs);
+}
+function utter(w) {
+  const u = new SpeechSynthesisUtterance(w);
+  const v = pickVoice();
+  if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-US";
+  u.rate = 0.8;
+  return u;
+}
+try { speechSynthesis.getVoices(); } catch (e) {}
+function fillVoices() {
+  const sel = $("#voice"); if (!sel) return;
+  const vs = englishVoices();
+  const auto = autoVoice(vs);
+  const cur = pickVoice();
+  const label = (v) => `${v.name}（${v.lang}）`;
+  sel.innerHTML = `<option value="">自動挑選${auto ? `：${label(auto)}` : ""}</option>` +
+    vs.map((v) => `<option value="${v.voiceURI.replace(/"/g, "&quot;")}">${label(v)}</option>`).join("");
+  sel.value = st.voice && vs.some((v) => v.voiceURI === st.voice) ? st.voice : "";
+  $("#voiceNow").textContent = vs.length
+    ? `現在使用：${cur ? label(cur) : "系統預設"}，共 ${vs.length} 個英文聲音可選。`
+    : "這台裝置沒有提供可選的英文聲音，會使用系統預設聲音。";
+}
+
 function speak(w) {
   try {
-    const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
+    const u = utter(w);
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
 }
@@ -570,7 +611,7 @@ function speakThen(w, cb) {
   const fin = () => { if (!done) { done = true; cb(); } };
   setTimeout(fin, Math.max(900, w.length * 110));
   try {
-    const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
+    const u = utter(w);
     u.onend = fin; u.onerror = fin;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) { fin(); }
@@ -586,7 +627,7 @@ function sayQueued(w, cb) {
   const fin = () => { if (!done) { done = true; cb && cb(); } };
   setTimeout(fin, queueEnd - now + 400);
   try {
-    const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
+    const u = utter(w);
     u.onend = fin; u.onerror = fin;
     speechSynthesis.speak(u);
   } catch (e) { fin(); }
@@ -991,9 +1032,17 @@ function parent(confirmReset = false) {
       <p class="small">${REPORT_URL ? `每完成一句（新句或複習），會自動通知 ${REPORT_TO}。` : `尚未設定寄信網址，目前不會寄出通知。`}</p>
       ${st.outbox && st.outbox.length ? `<p class="small muted">有 ${st.outbox.length} 封通知等網路恢復後寄出。</p>` : ""}
       ${REPORT_URL ? `<div class="row"><button class="btn ghost" id="testMail">寄一封測試信</button></div><p class="fb" id="mailFb"></p>` : ""}</div>
+    <div class="card"><h3>朗讀聲音</h3>
+      <p class="muted small">列出這台裝置的 Safari 可以用的英文聲音。選好後按「試聽」確認，選擇只存在這台裝置上。</p>
+      <div class="row"><select id="voice" aria-label="朗讀聲音"></select><button class="btn ghost" id="tryVoice">試聽</button></div>
+      <p class="small muted" id="voiceNow"></p></div>
     <div class="card"><h3>重設</h3>
       <div class="row"><button class="btn ghost" id="reset">${confirmReset ? "再按一次，確定清除全部進度" : "清除全部進度"}</button></div></div>`;
   $("#back").onclick = home;
+  fillVoices();
+  try { speechSynthesis.onvoiceschanged = () => { if ($("#voice")) fillVoices(); }; } catch (e) {}
+  $("#voice").onchange = () => { st.voice = $("#voice").value; save(); fillVoices(); speak("I am chopping onions."); };
+  $("#tryVoice").onclick = () => speak("I am chopping onions.");
   const tm = $("#testMail");
   if (tm) tm.onclick = () => {
     tm.disabled = true;
@@ -1003,7 +1052,7 @@ function parent(confirmReset = false) {
   };
   $("#reset").onclick = () => {
     if (!confirmReset) return parent(true);
-    st = fresh(); save(); home();
+    st = { ...fresh(), voice: st.voice || "" }; save(); home();
   };
 }
 
