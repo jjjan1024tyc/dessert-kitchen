@@ -575,6 +575,8 @@ function speakThen(w, cb) {
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) { fin(); }
 }
+// 單獨念 "I" 時，語音會念成 "capital I"，改成照發音念
+const spoken = (w) => w === "I" ? "eye" : w;
 // 排隊念：不打斷前一個字，點很快也會一個一個念完；cb 在這一句念完後執行
 let queueEnd = 0;
 function sayQueued(w, cb) {
@@ -608,7 +610,7 @@ function meaningOf(n, i) {
 function wireWords(n) {
   $$(".w").forEach((b) => b.onclick = () => {
     const i = +b.dataset.i, w = wordsOf(n)[i];
-    speak(w);
+    speak(spoken(w));
     $("#mean").innerHTML = `<b>${w}</b> ＝ ${meaningOf(n, i)}`;
   });
 }
@@ -732,8 +734,8 @@ function question() {
   const q = L.qs[L.qi];
   const total = L.qs.length;
   const say = q.type === "vid" ? S[q.n].v : enOf(q.n);
-  const prompt = q.type === "vid" ? "聽單字，看畫面，選出他正在做什麼" : "聽句子，選出你聽到的那一句";
-  const media = q.type === "zh" ? `<div class="subs"><p class="zh">${zhHTML(q.n)}</p></div>` : videoHTML(q.n);
+  const prompt = q.type === "vid" ? "聽單字，選出你聽到的那個字" : "聽句子，選出你聽到的那一句";
+  const media = q.type === "zh" ? `<div class="subs"><p class="zh">${zhHTML(q.n)}</p></div>` : "";
   const opt = (k) => q.type === "vid"
     ? `<button class="opt" data-k="${k}"><span class="oe">${S[k].v}</span><span class="oz">${S[k].zv}</span></button>`
     : `<button class="opt sent" data-k="${k}"><span class="oe">${enHTML(k)}</span></button>`;
@@ -767,7 +769,7 @@ function question() {
         L.mistakes++;
         b.classList.add("no");
         fb.className = "fb try";
-        fb.textContent = q.type === "zh" ? "沒關係，看看橘色的字，再選一次。" : "沒關係，可以播影片看看，再選一次。";
+        fb.textContent = q.type === "zh" ? "沒關係，看看橘色的字，再選一次。" : "沒關係，按「再聽一次」，再選一次。";
       }
     });
   });
@@ -805,7 +807,7 @@ function build() {
       b.classList.add("used"); $$(".tile").forEach((t) => t.classList.remove("glow"));
       placed++;
       fb.className = "fb"; fb.textContent = "";
-      sayQueued(words[i]);
+      sayQueued(spoken(words[i]));
       if (placed === words.length) {
         $(".tiles").hidden = true; $("#hint").hidden = true;
         fb.className = "fb good"; fb.textContent = "全部排對了！";
