@@ -139,10 +139,23 @@ p { margin: 0; }
 .opt.find .oe { font-size: 22px; }
 .opt.found { border-color: var(--ok); background: var(--ok-bg); }
 .opt.glow { border-color: var(--accent); background: var(--accent-soft); }
-.gloss { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.gloss { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
 .gloss span { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .gloss .ge { font-family: var(--f-en); font-size: 22px; font-weight: 600; }
 .gloss .gz { font-size: 16px; color: var(--muted); }
+.shelf-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 720px) { .shelf-list { grid-template-columns: 1fr 1fr; } }
+.srow { display: flex; gap: 12px; align-items: center; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 12px; min-width: 0; }
+.srow.locked { background: transparent; box-shadow: none; border: 2px dashed var(--line); }
+.sart { flex: none; width: 88px; border: 0; background: none; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 72px; }
+.sart svg { width: 100%; height: auto; }
+.sart .q { font-family: var(--f-en); font-size: 26px; font-weight: 700; color: var(--muted); }
+.stext { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.sname { border: 0; background: none; padding: 0; font-size: 17px; font-weight: 700; text-align: left; }
+.ssay { border: 0; background: var(--surface-2); border-radius: 10px; padding: 6px 10px; text-align: left; display: flex; flex-direction: column; gap: 0; }
+.ssay .sen { font-family: var(--f-en); font-weight: 600; font-size: 18px; }
+.ssay .szh { font-size: 15px; color: var(--muted); }
+.ssay:active { background: var(--accent-soft); }
 .why { background: var(--ok-bg); color: var(--ok); border-radius: 12px; padding: 10px 14px; font-size: 18px; font-weight: 500; text-align: center; }
 .btn2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
 .choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -478,7 +491,7 @@ const F = [
   [["Flip", "the pancakes", "翻", "鬆餅"], ["Flip", "the burger", "翻", "漢堡肉"], ["Flip", "the soup", "翻", "湯"], "湯是液體，翻不過來。"],
   [["Roast", "the chicken", "烤", "雞"], ["Roast", "the potatoes", "烤", "馬鈴薯"], ["Roast", "the ice", "烤", "冰塊"], "冰塊一烤就融化了。"],
   [["Knead", "the dough", "揉", "麵團"], ["Knead", "the clay", "揉", "黏土"], ["Knead", "the juice", "揉", "果汁"], "果汁是液體，不能揉。"],
-  [["Squeeze", "a lemon", "擠", "一顆檸檬"], ["Squeeze", "an orange", "擠", "一顆柳橙"], ["Squeeze", "a stone", "擠", "一顆石頭"], "石頭太硬，擠不出汁。"],
+  [["Squeeze", "a lemon", "擠", "檸檬"], ["Squeeze", "an orange", "擠", "柳橙"], ["Squeeze", "a stone", "擠", "石頭"], "石頭太硬，擠不出汁。"],
   [["Slice", "the bread", "切片", "麵包"], ["Slice", "the cheese", "切片", "起司"], ["Slice", "the water", "切片", "水"], "水是液體，切不成片。"],
   [["Mash", "the potatoes", "搗成泥", "馬鈴薯"], ["Mash", "the bananas", "搗成泥", "香蕉"], ["Mash", "the spoon", "搗成泥", "湯匙"], "湯匙是金屬做的，搗不爛。"],
   [["Crack", "the eggs", "敲開", "蛋"], ["Crack", "the nuts", "敲開", "堅果"], ["Crack", "the milk", "敲開", "牛奶"], "牛奶沒有殼，不用敲開。"],
@@ -500,7 +513,12 @@ const F = [
 ];
 const fEn = (s) => `${s[0]} ${s[1]}.`;
 // 中文分別放在動詞和名詞下面
-const glossHTML = (s) => `<span class="gloss"><span><span class="ge v">${s[0]}</span><span class="gz">${s[2]}</span></span><span><span class="ge">${s[1]}.</span><span class="gz">${s[3]}</span></span></span>`;
+// the / a / an 下面不放中文，名詞的中文放在名詞正下方
+function glossHTML(s) {
+  const m = s[1].match(/^(the|a|an) (.+)$/);
+  const col = (en, zh, cls = "") => `<span><span class="ge ${cls}">${en}</span><span class="gz">${zh || "&nbsp;"}</span></span>`;
+  return `<span class="gloss">${col(s[0], s[2], "v")}${m ? col(m[1], "") + col(m[2] + ".", s[3]) : col(s[1] + ".", s[3])}</span>`;
+}
 
 /* ---------- 儲存 ---------- */
 const KEY = "dessert-kitchen-v1";
@@ -555,6 +573,20 @@ function speakThen(w, cb) {
     const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
     u.onend = fin; u.onerror = fin;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) { fin(); }
+}
+// 排隊念：不打斷前一個字，點很快也會一個一個念完；cb 在這一句念完後執行
+let queueEnd = 0;
+function sayQueued(w, cb) {
+  const now = Date.now();
+  queueEnd = Math.max(now, queueEnd) + Math.max(700, w.length * 110);
+  let done = false;
+  const fin = () => { if (!done) { done = true; cb && cb(); } };
+  setTimeout(fin, queueEnd - now + 400);
+  try {
+    const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
+    u.onend = fin; u.onerror = fin;
+    speechSynthesis.speak(u);
   } catch (e) { fin(); }
 }
 function enHTML(n, tappable = false) {
@@ -630,13 +662,12 @@ function home() {
       <div class="stamps">${[...Array(24).keys()].map(cellHTML).join("")}</div>
       <p class="muted small">每一句都是：看影片 → 選選看 → 排句子 → 找錯句。學會新句子得到一個點心；在不同的日子複習，每天可以加一顆 ★，最多 ${MAX_STARS} 顆。</p>
     </div>
-    <div class="foot row" style="justify-content:center">${st.learned.length ? `<button class="linkish" id="toReview">學過的句子</button>` : ""}<button class="linkish" id="toParent">家長區</button></div>`;
+    <div class="foot row" style="justify-content:center"><button class="linkish" id="toParent">家長區</button></div>`;
   $("#toShelf").onclick = shelf;
   $$(".stamp[data-n]").forEach((b) => b.onclick = () => {
     const n = +b.dataset.n;
     if (isLearned(n)) showDessert(n); else startItem(n, "new");
   });
-  const rv = $("#toReview"); if (rv) rv.onclick = review;
   $("#toParent").onclick = parentGate;
   window.scrollTo(0, 0);
 }
@@ -690,16 +721,18 @@ function watch() {
 function quiz() {
   const n = L.n;
   L.qi = 0;
-  L.qs = shuffle([
-    { type: "vid", n, opts: shuffle([n, ...pickOthers(n, 1)]) },
+  // 固定順序：先句子題，再單字題
+  L.qs = [
     { type: "zh", n, opts: shuffle([n, ...pickOthers(n, 1)]) },
-  ]);
+    { type: "vid", n, opts: shuffle([n, ...pickOthers(n, 1)]) },
+  ];
   question();
 }
 function question() {
   const q = L.qs[L.qi];
   const total = L.qs.length;
-  const prompt = q.type === "vid" ? "看畫面，他正在做什麼？" : "哪一句英文是這個意思？";
+  const say = q.type === "vid" ? S[q.n].v : enOf(q.n);
+  const prompt = q.type === "vid" ? "聽單字，看畫面，選出他正在做什麼" : "聽句子，選出你聽到的那一句";
   const media = q.type === "zh" ? `<div class="subs"><p class="zh">${zhHTML(q.n)}</p></div>` : videoHTML(q.n);
   const opt = (k) => q.type === "vid"
     ? `<button class="opt" data-k="${k}"><span class="oe">${S[k].v}</span><span class="oz">${S[k].zv}</span></button>`
@@ -707,12 +740,16 @@ function question() {
   lessonShell(`<div class="card">
     <div class="row" style="justify-content:space-between"><p class="ask">${prompt}</p><span class="qcount">${L.qi + 1} / ${total}</span></div>
     ${media}
+    <div class="row"><button class="btn ghost" id="again">再聽一次</button></div>
     <div class="opts two">${q.opts.map(opt).join("")}</div>
     <p class="fb" id="fb"></p>
     <button class="btn big" id="next" hidden>${L.qi + 1 < total ? "下一題" : "下一步：排句子"}</button>
   </div>`);
   wireVideo();
-  let busy = false;
+  let busy = true;
+  // 一進畫面先念，念完才能選
+  speakThen(say, () => { busy = false; });
+  $("#again").onclick = () => { if (!busy) { busy = true; speakThen(say, () => { busy = false; }); } };
   $$(".opt").forEach((b) => b.onclick = () => {
     if (busy || b.classList.contains("no") || !$("#next").hidden) return;
     const k = +b.dataset.k;
@@ -757,29 +794,28 @@ function build() {
   </div>`);
   wireVideo();
   const fb = $("#fb");
-  let busy = false;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  queueEnd = 0;
+  // 按對：字卡立刻移上去，並排隊念出；按錯：不移、不念，輕輕晃一下
   $$(".tile").forEach((b) => b.onclick = () => {
     const i = +b.dataset.i;
-    if (busy || placed >= words.length || b.classList.contains("used")) return;
-    busy = true;
-    speakThen(words[i], () => {
-      busy = false;
-      if (words[i] === words[placed]) {
-        $(".slot").outerHTML = `<span class="placed">${i === 2 ? `<span class="v">${words[i]}</span>` : words[i]}${placed === words.length - 1 ? "." : ""}</span>`;
-        b.classList.add("used"); $$(".tile").forEach((t) => t.classList.remove("glow"));
-        placed++;
-        fb.className = "fb"; fb.textContent = "";
-        if (placed === words.length) {
-          fb.className = "fb good"; fb.textContent = "全部排對了！";
-          $(".tiles").hidden = true; $("#hint").hidden = true;
-          $("#next").hidden = false;
-        }
-      } else {
-        L.mistakes++;
-        b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
-        fb.className = "fb try"; fb.textContent = "不是這個字。可以播影片聽聽看，或按「給我提示」。";
+    if (placed >= words.length || b.classList.contains("used")) return;
+    if (words[i] === words[placed]) {
+      $(".slot").outerHTML = `<span class="placed">${i === 2 ? `<span class="v">${words[i]}</span>` : words[i]}${placed === words.length - 1 ? "." : ""}</span>`;
+      b.classList.add("used"); $$(".tile").forEach((t) => t.classList.remove("glow"));
+      placed++;
+      fb.className = "fb"; fb.textContent = "";
+      sayQueued(words[i]);
+      if (placed === words.length) {
+        $(".tiles").hidden = true; $("#hint").hidden = true;
+        fb.className = "fb good"; fb.textContent = "全部排對了！";
+        sayQueued(enOf(n), () => { const nx = $("#next"); if (nx) nx.hidden = false; });
       }
-    });
+    } else {
+      L.mistakes++;
+      b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+      fb.className = "fb try"; fb.textContent = "不是這個字。可以播影片聽聽看，或按「給我提示」。";
+    }
   });
   $("#hint").onclick = () => {
     const t = $$(".tile").find((t) => !t.classList.contains("used") && words[+t.dataset.i] === words[placed]);
@@ -888,41 +924,16 @@ function shelf() {
   L = null;
   app.innerHTML = `<div class="top"><div class="brand"><h1>我的點心櫃</h1><span>${st.learned.length} / 24　★ ${totalStars()}</span></div>
     <button class="chip" id="back">回首頁</button></div>
-    <div class="shelf">${D.map((d, i) => isLearned(i)
-      ? `<button class="dess" data-i="${i}">${ART[i]}<span class="dn">${d.name}</span><span class="stars" style="color:var(--gold);font-size:13px">${starStr(starsOf(i))}</span></button>`
-      : `<div class="dess locked"><span class="q">?</span><span class="dn">第 ${i + 1} 句</span></div>`).join("")}</div>`;
+    <p class="muted small">按英文句子可以聽朗讀；按點心可以看介紹、複習。</p>
+    <div class="shelf-list">${D.map((d, i) => isLearned(i)
+      ? `<div class="srow"><button class="sart" data-i="${i}" aria-label="${d.name}">${ART[i]}</button>
+          <div class="stext"><button class="sname" data-i="${i}">${d.name}</button>
+          <button class="ssay" data-n="${i}"><span class="sen">${enHTML(i)}</span><span class="szh">${S[i].zh}</span></button>
+          <span class="starline" style="font-size:15px">${starStr(starsOf(i))}</span></div></div>`
+      : `<div class="srow locked"><div class="sart"><span class="q">?</span></div><div class="stext"><span class="muted">第 ${i + 1} 句</span></div></div>`).join("")}</div>`;
   $("#back").onclick = home;
-  $$(".dess[data-i]").forEach((b) => b.onclick = () => showDessert(+b.dataset.i));
-  window.scrollTo(0, 0);
-}
-
-/* ---------- 學過的句子 ---------- */
-function review() {
-  stopVideo();
-  const list = st.learned.slice().sort((a, b) => a - b);
-  app.innerHTML = `<div class="top"><div class="brand"><h1>學過的句子</h1><span>${list.length} / 24</span></div>
-    <button class="chip" id="back">回首頁</button></div>
-    <div class="list">${list.map((i) => `<button data-i="${i}"><span class="num">${i + 1}</span><span class="ls">${enHTML(i)}</span><span class="starline" style="margin-left:auto;font-size:14px">${starStr(starsOf(i))}</span></button>`).join("")}</div>`;
-  $("#back").onclick = home;
-  $$(".list button").forEach((b) => b.onclick = () => reviewOne(+b.dataset.i));
-  window.scrollTo(0, 0);
-}
-function reviewOne(n) {
-  stopVideo();
-  const list = st.learned.slice().sort((a, b) => a - b);
-  const pos = list.indexOf(n);
-  app.innerHTML = `<div class="top"><div class="brand"><h1>學過的句子</h1><span>${pos + 1} / ${list.length}</span></div>
-    <button class="chip" id="back">回列表</button></div>
-    <div class="card">${videoHTML(n)}
-      <div class="subs"><p class="en">${enHTML(n, true)}</p><p class="zh">${zhHTML(n)}</p></div>
-      <p class="meaning" id="mean">按一下英文單字，可以聽發音、看意思</p>
-      <div class="row"><button class="btn ghost" id="prev" ${pos === 0 ? "disabled" : ""}>上一句</button><button class="btn ghost" id="nxt" ${pos + 1 >= list.length ? "disabled" : ""}>下一句</button></div>
-    </div>`;
-  wireVideo();
-  wireWords(n);
-  $("#back").onclick = review;
-  $("#prev").onclick = () => reviewOne(list[pos - 1]);
-  $("#nxt").onclick = () => reviewOne(list[pos + 1]);
+  $$(".sart[data-i], .sname").forEach((b) => b.onclick = () => showDessert(+b.dataset.i));
+  $$(".ssay").forEach((b) => b.onclick = () => speak(enOf(+b.dataset.n)));
   window.scrollTo(0, 0);
 }
 
