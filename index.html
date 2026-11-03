@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="甜點廚房">
+<meta name="robots" content="noindex">
+<title>甜點廚房</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Fraunces:ital,opsz,wght@1,9..144,600&display=swap">
+<style>
+/* Layout: one calm column, a fixed 4-step rail on every lesson, big touch targets for iPad/phone */
+:root {
+  --bg: #EEF2EF;
+  --surface: #FFFFFF;
+  --surface-2: #F6F8F6;
+  --ink: #1D2A28;
+  --muted: #5B6966;
+  --line: #D5DDD8;
+  --accent: #1E6B66;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCEDEA;
+  --verb: #C2410C;
+  --verb-bg: #FFE9DA;
+  --ok: #2C7A35;
+  --ok-bg: #E3F2E4;
+  --hint: #7A5C00;
+  --hint-bg: #FFF4CF;
+  --gold: #A87A12;
+  --shadow: 0 1px 2px rgba(20, 40, 36, .06), 0 4px 14px rgba(20, 40, 36, .06);
+  --f-en: "Lexend", "Noto Sans TC", system-ui, sans-serif;
+  --f-zh: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-fancy: "Fraunces", Georgia, "Noto Sans TC", serif;
+  --r: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A19; --surface: #1C2524; --surface-2: #222D2C; --ink: #E6EDEB; --muted: #A1AFAC; --line: #33413F;
+    --accent: #5BBDB4; --accent-ink: #0E1716; --accent-soft: #1F3A37;
+    --verb: #FF8F57; --verb-bg: #3B2417; --ok: #82CF87; --ok-bg: #1E3521; --hint: #EBCB6B; --hint-bg: #352C12; --gold: #E2B954;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A19; --surface: #1C2524; --surface-2: #222D2C; --ink: #E6EDEB; --muted: #A1AFAC; --line: #33413F;
+  --accent: #5BBDB4; --accent-ink: #0E1716; --accent-soft: #1F3A37;
+  --verb: #FF8F57; --verb-bg: #3B2417; --ok: #82CF87; --ok-bg: #1E3521; --hint: #EBCB6B; --hint-bg: #352C12; --gold: #E2B954;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-zh); font-size: 18px; line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap {
+  max-width: 760px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 40px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; line-height: 1.3; }
+p { margin: 0; }
+
+/* top bar */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand h1 { font-size: 24px; font-weight: 700; letter-spacing: .02em; }
+.brand span { font-family: var(--f-fancy); font-style: italic; color: var(--gold); font-size: 17px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 14px;
+  border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; font-size: 16px; font-weight: 500;
+}
+.chip b { font-family: var(--f-en); font-variant-numeric: tabular-nums; }
+
+/* cards & buttons */
+.card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.btn {
+  min-height: 56px; padding: 12px 22px; border-radius: 14px; border: 0;
+  background: var(--accent); color: var(--accent-ink); font-size: 20px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn.big { min-height: 64px; font-size: 22px; width: 100%; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); font-weight: 500; }
+.btn[disabled] { opacity: .45; cursor: default; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.row > .btn { flex: 1 1 160px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+
+/* step rail */
+.rail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.dots { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); display: block; }
+.dots i.done { background: var(--gold); border-color: var(--gold); }
+.dots i.now { border-color: var(--accent); background: var(--accent-soft); }
+.dots span { font-family: var(--f-en); font-size: 15px; color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+/* stamp card */
+.stamps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 560px) { .stamps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stamp {
+  aspect-ratio: 1; border-radius: 50%; border: 2px dashed var(--line); background: transparent; padding: 0;
+  display: flex; align-items: center; justify-content: center; font-family: var(--f-en); font-weight: 600; font-size: 17px; color: var(--muted); min-width: 0;
+}
+.stamp.got { border: 2px solid var(--gold); background: var(--surface); box-shadow: var(--shadow); padding: 4px; }
+.stamp.got svg { width: 100%; height: auto; }
+.stamp.next { border-color: var(--accent); color: var(--accent); }
+.stamp { position: relative; }
+.stamp .star {
+  position: absolute; top: -4px; right: -4px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); color: var(--surface); font-size: 13px; line-height: 22px; text-align: center; box-shadow: var(--shadow);
+}
+.plan-today { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.plan-today div { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; }
+.plan-today b { display: block; font-size: 22px; font-family: var(--f-en); }
+.plan-today span { font-size: 15px; color: var(--muted); }
+.tag { display: inline-block; font-size: 14px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.tag.new { background: var(--verb-bg); color: var(--verb); }
+.starline { color: var(--gold); font-weight: 700; font-size: 20px; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+.cell .stamp { width: 100%; cursor: pointer; }
+.cell .stars { color: var(--gold); font-size: 11px; line-height: 1.2; min-height: 14px; letter-spacing: -.5px; white-space: nowrap; }
+.cell .today { font-size: 11px; line-height: 1.25; font-weight: 700; color: var(--accent); text-align: center; min-height: 14px; }
+.cell .today.new { color: var(--verb); }
+.opt.find { align-items: flex-start; text-align: left; }
+.opt.find .oe { font-size: 22px; }
+.opt.found { border-color: var(--ok); background: var(--ok-bg); }
+.opt.glow { border-color: var(--accent); background: var(--accent-soft); }
+.gloss { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.gloss span { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.gloss .ge { font-family: var(--f-en); font-size: 22px; font-weight: 600; }
+.gloss .gz { font-size: 16px; color: var(--muted); }
+.why { background: var(--ok-bg); color: var(--ok); border-radius: 12px; padding: 10px 14px; font-size: 18px; font-weight: 500; text-align: center; }
+.btn2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+.choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 420px) { .choice { grid-template-columns: 1fr; } }
+.choice .btn { flex-direction: column; gap: 0; min-height: 84px; }
+.choice .btn small { font-size: 14px; font-weight: 500; opacity: .85; }
+.rail div {
+  border-radius: 12px; padding: 8px 4px; text-align: center; font-size: 15px; font-weight: 500;
+  background: var(--surface); border: 1.5px solid var(--line); color: var(--muted);
+}
+.rail div .n { display: block; font-family: var(--f-en); font-size: 13px; font-weight: 600; }
+.rail div.now { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); font-weight: 700; }
+.rail div.done { color: var(--ok); border-color: transparent; background: var(--ok-bg); }
+.rail div.skip { opacity: .5; border-style: dashed; }
+
+/* video */
+.vid { position: relative; border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 1280 / 744; max-width: 100%; }
+.vid video { width: 100%; height: 100%; display: block; object-fit: cover; }
+.vid .cover {
+  position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.12);
+  display: flex; align-items: center; justify-content: center;
+}
+.vid .cover svg { width: 72px; height: 72px; }
+.vid.playing .cover { display: none; }
+.listen {
+  border: 2px dashed var(--line); border-radius: 14px; background: var(--surface-2);
+  min-height: 150px; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  font-size: 18px; font-weight: 500;
+}
+.listen svg { width: 64px; height: 64px; color: var(--accent); }
+.listen.playing { border-color: var(--accent); background: var(--accent-soft); }
+
+/* subtitles */
+.subs { display: flex; flex-direction: column; gap: 6px; padding: 14px 8px 4px; text-align: center; }
+.en { font-family: var(--f-en); font-weight: 600; font-size: clamp(28px, 6.4vw, 44px); line-height: 1.3; letter-spacing: .005em; }
+.zh { font-family: var(--f-zh); font-size: clamp(22px, 4.6vw, 30px); font-weight: 500; color: var(--ink); }
+.v { color: var(--verb); background: var(--verb-bg); border-radius: 8px; padding: 0 .18em; font-weight: 700; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.w { border: 0; background: none; padding: 0 .06em; border-radius: 8px; font: inherit; }
+.w:active { background: var(--accent-soft); }
+.meaning { min-height: 34px; text-align: center; font-size: 18px; color: var(--muted); }
+.meaning b { font-family: var(--f-en); color: var(--ink); }
+.note { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; font-size: 16px; color: var(--muted); }
+.note b { color: var(--ink); }
+
+/* questions */
+.ask { font-size: 21px; font-weight: 700; }
+.opts { display: grid; gap: 12px; }
+.opts.two { grid-template-columns: 1fr 1fr; }
+@media (max-width: 520px) { .opts.two { grid-template-columns: 1fr; } }
+.opt {
+  min-height: 72px; padding: 12px 16px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center;
+}
+.opt .oe { font-family: var(--f-en); font-size: 24px; font-weight: 600; }
+.opt .oz { font-size: 17px; color: var(--muted); }
+.opt.sent .oe { font-size: 22px; }
+.opt.yes { border-color: var(--ok); background: var(--ok-bg); }
+.opt.no { opacity: .35; border-style: dashed; }
+.fb { min-height: 30px; font-size: 18px; font-weight: 500; text-align: center; }
+.fb.good { color: var(--ok); }
+.fb.try { color: var(--hint); background: var(--hint-bg); border-radius: 10px; padding: 6px 10px; }
+.qcount { font-family: var(--f-en); font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* sentence builder */
+.slots { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 64px; padding: 10px; border-radius: 14px; background: var(--surface-2); border: 2px dashed var(--line); }
+.slot { min-width: 54px; height: 48px; border-bottom: 3px solid var(--line); }
+.tiles { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.tile {
+  font-family: var(--f-en); font-size: 26px; font-weight: 600; min-height: 56px; padding: 6px 18px;
+  border-radius: 12px; border: 2px solid var(--line); background: var(--surface); box-shadow: var(--shadow);
+}
+.placed { font-family: var(--f-en); font-size: 26px; font-weight: 600; min-height: 48px; padding: 4px 6px; display: inline-flex; align-items: center; }
+.tile.used { visibility: hidden; }
+.tile.shake { animation: shake .35s; }
+.tile.glow { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+/* home */
+.today { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.plan li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.plan .k { font-family: var(--f-en); font-weight: 700; color: var(--accent); width: 22px; text-align: center; }
+.plan .t { margin-left: auto; font-size: 15px; color: var(--muted); font-family: var(--f-en); }
+.mystery { display: flex; align-items: center; gap: 14px; }
+.mystery .box { width: 72px; height: 72px; flex: none; border-radius: 16px; border: 2px dashed var(--gold); display: flex; align-items: center; justify-content: center; font-family: var(--f-en); font-size: 30px; color: var(--gold); font-weight: 700; }
+
+/* collection */
+.shelf { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) { .shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.dess {
+  border: 0; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 10px 6px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0;
+}
+.dess svg { width: 100%; max-width: 120px; height: auto; }
+.dess .dn { font-size: 15px; font-weight: 700; line-height: 1.3; text-align: center; }
+.dess.locked { background: transparent; box-shadow: none; border: 2px dashed var(--line); color: var(--muted); justify-content: center; min-height: 140px; cursor: default; }
+.dess.locked .q { font-family: var(--f-en); font-size: 28px; font-weight: 700; }
+.dess.locked .dn { font-weight: 400; }
+
+/* dessert detail */
+.reveal { align-items: center; text-align: center; }
+.reveal svg { width: min(260px, 70%); height: auto; }
+.reveal.pop svg { animation: pop .7s cubic-bezier(.2, .9, .3, 1.2); }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.dname { font-size: 30px; font-weight: 700; }
+.dname-en { font-family: var(--f-fancy); font-style: italic; font-size: 22px; color: var(--gold); }
+.facts { display: grid; gap: 8px; text-align: left; width: 100%; }
+.facts div { background: var(--surface-2); border-radius: 12px; padding: 10px 14px; font-size: 17px; }
+.facts b { color: var(--muted); font-weight: 500; margin-right: 8px; }
+.overlay {
+  position: fixed; inset: 0; background: rgba(10, 20, 18, .45); z-index: 20; display: flex; align-items: flex-end; justify-content: center;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.overlay .card { width: 100%; max-width: 560px; max-height: 88vh; overflow: auto; }
+@media (min-width: 700px) { .overlay { align-items: center; } }
+
+/* review list & parent */
+.list { display: grid; gap: 10px; }
+.list button { text-align: left; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); padding: 12px 14px; min-height: 56px; display: flex; gap: 12px; align-items: center; }
+.list .num { font-family: var(--f-en); color: var(--muted); font-variant-numeric: tabular-nums; width: 26px; flex: none; }
+.list .ls { font-family: var(--f-en); font-size: 20px; font-weight: 600; }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+input[type=text], input[type=number] { font: inherit; font-size: 20px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); width: 120px; }
+.foot { text-align: center; }
+.linkish { background: none; border: 0; color: var(--muted); text-decoration: underline; font-size: 15px; min-height: 44px; padding: 8px 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal.pop svg, .tile.shake { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------- 設定 ---------- */
+// 完成當天課程時要通知的網址（Google Apps Script 網頁應用程式的網址，結尾是 /exec）。留空 = 不寄信。
+const REPORT_URL = "https://script.google.com/macros/s/AKfycbxIkEk6UksswgOPjjgRXOhOHOYI11tpdmt8Mfqhcgam83RuuKJNT9_W0JJdBrnni_CFCg/exec";
+// 要和 Apps Script 裡的 TOKEN 一模一樣
+const REPORT_TOKEN = "dessert-kitchen-2026";
+const REPORT_TO = "jjjan1024@gmail.com";
+
+/* ---------- 句子 ---------- */
+// v 動詞, o 受詞, zh 中文, zv 中文動詞（標色）, om 受詞每個字的中文
+const S = [
+  { v: "chopping", o: "onions", zh: "我正在切碎洋蔥。", zv: "切碎", om: ["洋蔥"] },
+  { v: "frying", o: "eggs", zh: "我正在煎蛋。", zv: "煎", om: ["蛋"] },
+  { v: "flipping", o: "pancakes", zh: "我正在翻鬆餅。", zv: "翻", om: ["鬆餅"] },
+  { v: "roasting", o: "chicken", zh: "我正在烤雞。", zv: "烤", om: ["雞"] },
+  { v: "kneading", o: "dough", zh: "我正在揉麵團。", zv: "揉", om: ["麵團"] },
+  { v: "squeezing", o: "a lemon", zh: "我正在擠檸檬。", zv: "擠", om: ["一顆", "檸檬"] },
+  { v: "slicing", o: "bread", zh: "我正在把麵包切片。", zv: "切片", om: ["麵包"] },
+  { v: "mashing", o: "potatoes", zh: "我正在把馬鈴薯搗成泥。", zv: "搗成泥", om: ["馬鈴薯"] },
+  { v: "cracking", o: "eggs", zh: "我正在敲開蛋。", zv: "敲開", om: ["蛋"] },
+  { v: "scaling", o: "fish", zh: "我正在刮魚鱗。", zv: "刮魚鱗", om: ["魚"] },
+  { v: "carving", o: "turkey", zh: "我正在分切火雞。", zv: "分切", om: ["火雞"] },
+  { v: "whisking", o: "eggs", zh: "我正在攪打蛋液。", zv: "攪打", om: ["蛋"] },
+  { v: "dicing", o: "apple", zh: "我正在把蘋果切丁。", zv: "切丁", om: ["蘋果"] },
+  { v: "zesting", o: "lemons", zh: "我正在刨檸檬皮。", zv: "刨", om: ["檸檬"] },
+  { v: "peeling", o: "orange", zh: "我正在剝柳橙。", zv: "剝", om: ["柳橙"] },
+  { v: "pouring", o: "water", zh: "我正在倒水。", zv: "倒", om: ["水"] },
+  { v: "washing", o: "vegetables", zh: "我正在洗蔬菜。", zv: "洗", om: ["蔬菜"] },
+  { v: "toasting", o: "bread", zh: "我正在烤吐司。", zv: "烤", om: ["麵包（吐司）"] },
+  { v: "baking", o: "cookies", zh: "我正在烤餅乾。", zv: "烤", om: ["餅乾"] },
+  { v: "stirring", o: "coffee", zh: "我正在攪拌咖啡。", zv: "攪拌", om: ["咖啡"] },
+  { v: "grating", o: "cheese", zh: "我正在磨起司。", zv: "磨", om: ["起司"] },
+  { v: "whipping", o: "cream", zh: "我正在打發鮮奶油。", zv: "打發", om: ["鮮奶油"] },
+  { v: "crushing", o: "garlic", zh: "我正在壓碎大蒜。", zv: "壓碎", om: ["大蒜"] },
+  { v: "boiling", o: "water", zh: "我正在燒開水。", zv: "燒開", om: ["水"] },
+];
+const enOf = (n) => `I am ${S[n].v} ${S[n].o}.`;
+const wordsOf = (n) => ["I", "am", S[n].v, ...S[n].o.split(" ")];
+const ROAST_TIP = "<b>英文的「烤」有好幾種：</b>roasting 烤大塊的肉或蔬菜、toasting 把麵包烤到酥脆、baking 用烤箱烤餅乾、蛋糕、麵包。";
+const TIPS = { 3: ROAST_TIP, 17: ROAST_TIP, 18: ROAST_TIP };
+
+/* ---------- 點心插畫 ---------- */
+const PLATE = '<ellipse cx="60" cy="88" rx="52" ry="9" fill="#FFFFFF" stroke="#D3D9DC" stroke-width="1.5"/><ellipse cx="60" cy="87" rx="36" ry="5" fill="#EEF1F2"/>';
+const svg = (inner, plate = true) => `<svg viewBox="0 0 120 100" role="img" aria-hidden="true">${plate ? PLATE : ""}${inner}</svg>`;
+function wedge(top, left, right, extra = "") {
+  return `<path d="M66 64 L96 44 V66 L66 86Z" fill="${right}"/><path d="M30 50 L66 64 V86 L30 72Z" fill="${left}"/><path d="M30 50 L62 40 L96 44 L66 64Z" fill="${top}"/>${extra}`;
+}
+function diamond(cx, cy) {
+  return `<path d="M${cx - 17} ${cy} L${cx} ${cy + 9} L${cx + 17} ${cy} V${cy + 8} L${cx} ${cy + 17} L${cx - 17} ${cy + 8}Z" fill="#B97A2A"/>
+  <g stroke="#E9B868" stroke-width="1" fill="none"><path d="M${cx - 17} ${cy + 3} L${cx} ${cy + 12} L${cx + 17} ${cy + 3}"/><path d="M${cx - 17} ${cy + 6} L${cx} ${cy + 15} L${cx + 17} ${cy + 6}"/></g>
+  <path d="M${cx - 17} ${cy} L${cx} ${cy - 9} L${cx + 17} ${cy} L${cx} ${cy + 9}Z" fill="#E2A64B"/>
+  <g fill="#7DB653"><circle cx="${cx - 3}" cy="${cy - 1}" r="2.4"/><circle cx="${cx + 3}" cy="${cy + 1}" r="2.2"/><circle cx="${cx}" cy="${cy - 3}" r="1.8"/><circle cx="${cx + 1}" cy="${cy + 3}" r="1.6"/></g>`;
+}
+const ART = [
+  // 1 馬卡龍
+  svg(`<path d="M60 60 Q60 46 80 46 Q100 46 100 60Z" fill="#B9D98A"/><rect x="61" y="60" width="38" height="5" rx="2.5" fill="#F7F0D8"/><path d="M60 65 H100 Q100 77 80 77 Q60 77 60 65Z" fill="#A9CC78"/>
+  <path d="M20 64 Q20 45 51 45 Q82 45 82 64Z" fill="#F2A7BB"/><path d="M22 64 H80 l-1.5 3 H23.5Z" fill="#E28DA4"/><rect x="23" y="66" width="56" height="7" rx="3.5" fill="#FFF6E8"/>
+  <path d="M20 73 H82 Q82 85 51 85 Q20 85 20 73Z" fill="#EE9CB2"/><path d="M31 53 Q40 48 51 48" stroke="#fff" stroke-opacity=".65" stroke-width="3" fill="none" stroke-linecap="round"/>`),
+  // 2 吉拿棒
+  svg(`<path d="M70 52 H104 L100 85 H74Z" fill="#F7F4EF" stroke="#D3CBC0" stroke-width="1.2"/><ellipse cx="87" cy="52" rx="17" ry="4.5" fill="#5B3420"/><path d="M73 60 H101" stroke="#C9B7A6" stroke-width="1"/>
+  <g transform="rotate(-24 46 70)"><rect x="12" y="64" width="70" height="11" rx="5.5" fill="#D99A4E"/><path d="M16 69.5 H78" stroke="#B5782F" stroke-width="1.4" stroke-dasharray="5 3"/></g>
+  <g transform="rotate(-10 46 76)"><rect x="10" y="72" width="70" height="11" rx="5.5" fill="#E2A75C"/><path d="M14 77.5 H76" stroke="#B5782F" stroke-width="1.4" stroke-dasharray="5 3"/></g>
+  <g fill="#FFFFFF" opacity=".85"><circle cx="30" cy="70" r="1.2"/><circle cx="44" cy="76" r="1.2"/><circle cx="56" cy="62" r="1.2"/><circle cx="36" cy="80" r="1"/><circle cx="62" cy="74" r="1"/></g>`),
+  // 3 銅鑼燒
+  svg(`<path d="M22 66 Q22 43 60 43 Q98 43 98 66Z" fill="#A85A22"/><path d="M36 51 Q48 46 64 46" stroke="#C97A3E" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M22 66 H98 V70 H22Z" fill="#E7AE68"/><rect x="25" y="69" width="70" height="8" rx="3.5" fill="#62262C"/><g fill="#7E3540"><circle cx="34" cy="73" r="1.6"/><circle cx="52" cy="72" r="1.6"/><circle cx="71" cy="74" r="1.6"/><circle cx="86" cy="72" r="1.6"/></g>
+  <path d="M22 76 H98 Q98 85 60 85 Q22 85 22 76Z" fill="#E7AE68"/>`),
+  // 4 可麗露
+  svg(`<path d="M40 40 H80 L87 85 H33Z" fill="#7A3B17"/><g stroke="#55250D" stroke-width="2.2"><line x1="47" y1="42" x2="43" y2="84"/><line x1="54" y1="42" x2="52" y2="85"/><line x1="60" y1="42" x2="60" y2="85"/><line x1="66" y1="42" x2="68" y2="85"/><line x1="73" y1="42" x2="77" y2="84"/></g>
+  <path d="M43 46 L40 80" stroke="#B66A35" stroke-width="2.4" opacity=".7" stroke-linecap="round"/><ellipse cx="60" cy="40" rx="20" ry="5.5" fill="#A55A26"/><ellipse cx="60" cy="40" rx="10" ry="2.6" fill="#D29455"/>`),
+  // 5 千層派
+  svg(`<path d="M100 46 L110 38 V77 L100 85Z" fill="#C2843F"/>
+  <rect x="18" y="46" width="82" height="7" fill="#D9A05B"/><rect x="18" y="53" width="82" height="8" fill="#FFF0C9"/><rect x="18" y="61" width="82" height="7" fill="#D9A05B"/><rect x="18" y="68" width="82" height="9" fill="#FFF0C9"/><rect x="18" y="77" width="82" height="8" fill="#D39550"/>
+  <path d="M18 46 L28 38 H110 L100 46Z" fill="#FFFDF7" stroke="#E6E0D3" stroke-width="1"/>
+  <g stroke="#6B3D1F" stroke-width="1.4" fill="none"><path d="M33 40 H105"/><path d="M29 42.5 H102"/><path d="M25 45 H99"/></g>
+  <g stroke="#B88A62" stroke-width="1" fill="none"><path d="M46 39 L40 46"/><path d="M62 39 L56 46"/><path d="M78 39 L72 46"/><path d="M94 39 L88 46"/></g>`),
+  // 6 檸檬塔
+  svg(`<ellipse cx="60" cy="74" rx="40" ry="12" fill="#C98E48"/><rect x="20" y="64" width="80" height="10" fill="#D9A05B"/><ellipse cx="60" cy="64" rx="40" ry="12" fill="#E8B872"/><ellipse cx="60" cy="64" rx="34" ry="9" fill="#F7D94C"/>
+  <path d="M34 62 Q46 58 58 59" stroke="#FFF2A8" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <circle cx="72" cy="58" r="8.5" fill="#FFF3B0" stroke="#EDBE20" stroke-width="2.2"/><g stroke="#EDBE20" stroke-width="1"><line x1="72" y1="50" x2="72" y2="66"/><line x1="64" y1="58" x2="80" y2="58"/><line x1="66.5" y1="52.5" x2="77.5" y2="63.5"/><line x1="77.5" y1="52.5" x2="66.5" y2="63.5"/></g>
+  <ellipse cx="58" cy="58" rx="6" ry="2.8" fill="#5E9F4E" transform="rotate(-25 58 58)"/>`),
+  // 7 抹茶瑞士捲
+  svg(`<ellipse cx="60" cy="84" rx="26" ry="4" fill="#000" opacity=".08"/><circle cx="60" cy="56" r="28" fill="#6E9644"/><circle cx="60" cy="56" r="25" fill="#9CC266"/>
+  <path d="M60 56 a3 3 0 0 1 6 0 a6 6 0 0 1 -12 0 a9 9 0 0 1 18 0 a12 12 0 0 1 -24 0 a15 15 0 0 1 30 0" fill="none" stroke="#FFF8E8" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="60" cy="30" r="5" fill="#E5383B"/><path d="M57 26 L60 23 L63 26" stroke="#4F8A3B" stroke-width="2" fill="none"/>`),
+  // 8 蒙布朗
+  svg(`<path d="M32 74 H88 L83 85 H37Z" fill="#D9A05B"/><path d="M36 75 Q35 38 60 35 Q85 38 84 75Z" fill="#B07A4F"/>
+  <g fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M40 73 Q42 50 60 38" stroke="#8E5C36"/><path d="M47 75 Q48 52 61 37" stroke="#C99467"/><path d="M54 75 Q54 54 62 37" stroke="#8E5C36"/><path d="M61 75 Q62 54 60 37" stroke="#C99467"/><path d="M68 75 Q68 52 59 37" stroke="#8E5C36"/><path d="M75 75 Q74 52 59 38" stroke="#C99467"/><path d="M81 72 Q78 50 60 39" stroke="#8E5C36"/></g>
+  <ellipse cx="60" cy="31" rx="7.5" ry="6.5" fill="#7A4220"/><path d="M55 28 Q60 25 64 28" stroke="#A86438" stroke-width="1.6" fill="none"/>
+  <g fill="#FFFFFF" opacity=".9"><circle cx="48" cy="50" r="1.1"/><circle cx="66" cy="46" r="1.1"/><circle cx="72" cy="60" r="1.1"/><circle cx="53" cy="62" r="1"/><circle cx="60" cy="52" r="1"/></g>`),
+  // 9 葡式蛋塔
+  svg(`<ellipse cx="60" cy="70" rx="40" ry="16" fill="#C2823A"/><ellipse cx="60" cy="65" rx="40" ry="16" fill="#E3AE63"/>
+  <g fill="none" stroke="#C98B42" stroke-width="1.2"><ellipse cx="60" cy="65" rx="36" ry="14"/></g><ellipse cx="60" cy="64" rx="31" ry="11.5" fill="#F4C64E"/>
+  <g fill="#E39B2C" opacity=".8"><ellipse cx="52" cy="61" rx="8" ry="4"/><ellipse cx="68" cy="66" rx="6" ry="3"/><ellipse cx="74" cy="59" rx="4.5" ry="2.4"/></g>
+  <g fill="#5B2E12"><ellipse cx="52" cy="61" rx="4.5" ry="2.2" opacity=".85"/><ellipse cx="68" cy="66" rx="3.6" ry="1.8" opacity=".75"/><ellipse cx="62" cy="58" rx="2.6" ry="1.3" opacity=".6"/><ellipse cx="45" cy="67" rx="2.6" ry="1.4" opacity=".55"/><ellipse cx="74" cy="59" rx="2.2" ry="1.2" opacity=".65"/></g>`),
+  // 10 瑪德蓮
+  svg(`<path d="M60 84 C30 84 20 60 29 46 C37 33 83 33 91 46 C100 60 90 84 60 84Z" fill="#E7A957" stroke="#C98633" stroke-width="1.5"/>
+  <g stroke="#C98633" stroke-width="2" stroke-linecap="round" opacity=".75"><line x1="60" y1="80" x2="33" y2="48"/><line x1="60" y1="80" x2="41" y2="41"/><line x1="60" y1="80" x2="50" y2="38"/><line x1="60" y1="80" x2="60" y2="37"/><line x1="60" y1="80" x2="70" y2="38"/><line x1="60" y1="80" x2="79" y2="41"/><line x1="60" y1="80" x2="87" y2="48"/></g>
+  <path d="M38 50 Q48 42 60 42" stroke="#F6CF8E" stroke-width="3" fill="none" stroke-linecap="round"/>`),
+  // 11 練切
+  `<svg viewBox="0 0 120 100" role="img" aria-hidden="true"><ellipse cx="60" cy="84" rx="44" ry="9" fill="#2F3E46"/><ellipse cx="60" cy="82" rx="38" ry="6" fill="#3E5560"/>
+  <g fill="#F7B7C8" stroke="#E592AA" stroke-width="1.4"><circle cx="60" cy="43" r="13"/><circle cx="73.3" cy="52.7" r="13"/><circle cx="68.2" cy="68.3" r="13"/><circle cx="51.8" cy="68.3" r="13"/><circle cx="46.7" cy="52.7" r="13"/></g>
+  <circle cx="60" cy="57" r="11" fill="#FBD3DE"/><g stroke="#E592AA" stroke-width="1.2"><line x1="60" y1="46" x2="60" y2="34"/><line x1="70.5" y1="53.6" x2="82" y2="49.5"/><line x1="66.5" y1="65.9" x2="73.6" y2="75.7"/><line x1="53.5" y1="65.9" x2="46.4" y2="75.7"/><line x1="49.5" y1="53.6" x2="38" y2="49.5"/></g>
+  <g fill="#F2C94C"><circle cx="60" cy="54" r="2"/><circle cx="63" cy="58" r="2"/><circle cx="57" cy="58" r="2"/><circle cx="60" cy="61" r="1.6"/></g></svg>`,
+  // 12 舒芙蕾
+  svg(`<path d="M31 60 H89 V81 Q60 88 31 81Z" fill="#FFFFFF" stroke="#CFD5DA" stroke-width="1.4"/><g stroke="#E1E6EA" stroke-width="2"><line x1="38" y1="62" x2="38" y2="82"/><line x1="46" y1="62" x2="46" y2="84"/><line x1="54" y1="62" x2="54" y2="85"/><line x1="62" y1="62" x2="62" y2="85"/><line x1="70" y1="62" x2="70" y2="85"/><line x1="78" y1="62" x2="78" y2="84"/></g>
+  <path d="M29 60 Q29 34 60 32 Q91 34 91 60Z" fill="#E9B865"/><path d="M35 52 Q40 37 60 36 Q80 37 85 52 Q60 45 35 52Z" fill="#D2963F"/><ellipse cx="60" cy="60" rx="31" ry="3" fill="#F5F7F8"/>
+  <g fill="#FFFFFF"><circle cx="50" cy="42" r="1.3"/><circle cx="62" cy="39" r="1.3"/><circle cx="72" cy="44" r="1.3"/><circle cx="56" cy="47" r="1.1"/><circle cx="67" cy="49" r="1.1"/><circle cx="44" cy="49" r="1"/></g>`),
+  // 13 果仁蜜餅
+  svg(diamond(60, 46) + diamond(41, 60) + diamond(79, 60)),
+  // 14 義式奶酪
+  svg(`<path d="M37 82 Q35 50 60 48 Q85 50 83 82Z" fill="#FFF8EC" stroke="#EADFCB" stroke-width="1.4"/>
+  <path d="M41 57 Q60 43 79 57 Q81 63 77 67 Q75 61 73 65 Q71 72 67 64 Q63 59 59 67 Q55 74 53 63 Q50 58 47 65 Q42 67 41 57Z" fill="#C2264B"/>
+  <path d="M46 54 Q54 49 62 49" stroke="#E8687F" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <circle cx="57" cy="46" r="4.2" fill="#8E1E3A"/><circle cx="64" cy="45" r="3.6" fill="#3A4E8C"/><ellipse cx="70" cy="42" rx="5" ry="2.4" fill="#5E9F4E" transform="rotate(-30 70 42)"/>`),
+  // 15 芒果糯米飯
+  svg(`<path d="M20 83 Q18 57 41 55 Q62 55 62 83Z" fill="#FBFAF4" stroke="#E2DED2" stroke-width="1.3"/>
+  <g fill="#E8E3D3"><ellipse cx="32" cy="66" rx="2" ry="1"/><ellipse cx="42" cy="61" rx="2" ry="1"/><ellipse cx="50" cy="70" rx="2" ry="1"/><ellipse cx="36" cy="76" rx="2" ry="1"/><ellipse cx="54" cy="62" rx="2" ry="1"/></g>
+  <path d="M26 64 Q34 58 44 60 Q52 62 58 59 Q60 66 52 66 Q42 66 34 70 Q27 72 26 64Z" fill="#F6EBC8"/><g fill="#E9B949"><circle cx="38" cy="60" r="1.4"/><circle cx="44" cy="58" r="1.4"/><circle cx="48" cy="61" r="1.4"/></g>
+  <path d="M60 84 Q66 50 98 54 Q86 63 82 84Z" fill="#FDB833"/><path d="M70 84 Q76 58 104 64 Q92 70 90 84Z" fill="#F9A21B"/>
+  <g stroke="#E58E0C" stroke-width="1" fill="none" opacity=".7"><path d="M66 76 Q72 62 92 58"/><path d="M76 78 Q82 68 98 66"/></g>`),
+  // 16 烤布蕾
+  svg(`<path d="M18 64 V71 Q18 84 60 84 Q102 84 102 71 V64Z" fill="#FFFFFF" stroke="#CFD5DA" stroke-width="1.4"/><ellipse cx="60" cy="64" rx="42" ry="13" fill="#FFFFFF" stroke="#CFD5DA" stroke-width="1.4"/>
+  <ellipse cx="60" cy="64" rx="35" ry="10" fill="#C98A2E"/><g fill="#E3A845"><ellipse cx="48" cy="62" rx="10" ry="3.5"/><ellipse cx="72" cy="67" rx="8" ry="2.6"/></g>
+  <g stroke="#7A4A12" stroke-width="1.1" fill="none"><path d="M44 66 L52 62 L58 65 L66 60"/><path d="M58 65 L60 71"/></g>
+  <g fill="#C8273E"><circle cx="78" cy="59" r="3.2"/><circle cx="82" cy="61" r="3"/><circle cx="79" cy="63" r="2.8"/></g><circle cx="71" cy="58" r="2.8" fill="#34477E"/>`),
+  // 17 草莓大福
+  svg(`<circle cx="60" cy="58" r="27" fill="#FAF7F2" stroke="#E4DDD2" stroke-width="1.4"/><circle cx="60" cy="59" r="20" fill="#4A2730"/>
+  <path d="M60 44 C73 44 77 57 71 67 C67 73 63 77 60 79 C57 77 53 73 49 67 C43 57 47 44 60 44Z" fill="#E5383B"/>
+  <path d="M60 49 C66 50 68 58 64 66 C62 70 61 72 60 73 C59 72 58 70 56 66 C52 58 54 50 60 49Z" fill="#F7A6A8"/>
+  <g fill="#FFE08A"><circle cx="52" cy="56" r="1"/><circle cx="68" cy="56" r="1"/><circle cx="54" cy="66" r="1"/><circle cx="66" cy="66" r="1"/><circle cx="60" cy="74" r="1"/></g>
+  <g fill="#FFFFFF" opacity=".9"><circle cx="40" cy="44" r="1.3"/><circle cx="82" cy="50" r="1.3"/><circle cx="44" cy="76" r="1.2"/><circle cx="78" cy="74" r="1.2"/></g>`),
+  // 18 閃電泡芙
+  svg(`<rect x="16" y="58" width="88" height="23" rx="11.5" fill="#E0A458"/><path d="M24 76 H96" stroke="#C78A3E" stroke-width="1.5" opacity=".6"/>
+  <path d="M18 67 Q18 56 30 56 H90 Q102 56 102 67 Q97 64 92 68 Q86 63 80 67 Q72 62 64 67 Q56 62 48 67 Q40 62 32 67 Q25 63 18 67Z" fill="#4A2617"/>
+  <polyline points="26,60 32,64 38,58 44,64 50,58 56,64 62,58 68,64 74,58 80,64 86,58 92,63" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/>
+  <g fill="#E2B954"><circle cx="40" cy="58" r="1.6"/><circle cx="72" cy="58" r="1.6"/></g>`),
+  // 19 巴斯克乳酪蛋糕
+  svg(wedge("#5C3119", "#F5DDA4", "#3E2214", `<g fill="#8A4F27" opacity=".8"><ellipse cx="52" cy="48" rx="8" ry="3"/><ellipse cx="74" cy="47" rx="6" ry="2.4"/></g><path d="M31 53 L65 66" stroke="#B9763A" stroke-width="2.5" opacity=".7"/><path d="M33 58 L64 70" stroke="#FBEBC5" stroke-width="2" opacity=".7"/>`)),
+  // 20 提拉米蘇
+  svg(`<path d="M84 48 L96 40 V77 L84 85Z" fill="#D9C8A8"/><g stroke="#8B5A33" stroke-width="2"><path d="M84 59 L96 51"/><path d="M84 73 L96 65"/></g>
+  <rect x="26" y="48" width="58" height="8" fill="#FAF0DC"/><rect x="26" y="56" width="58" height="7" fill="#9C6A3E"/><rect x="26" y="63" width="58" height="9" fill="#FAF0DC"/><rect x="26" y="72" width="58" height="7" fill="#9C6A3E"/><rect x="26" y="79" width="58" height="6" fill="#FAF0DC"/>
+  <path d="M26 48 L38 40 H96 L84 48Z" fill="#6B4226"/><g fill="#4A2C17"><circle cx="44" cy="44" r="1"/><circle cx="56" cy="42" r="1"/><circle cx="70" cy="45" r="1"/><circle cx="82" cy="42" r="1"/><circle cx="62" cy="46" r="1"/><circle cx="50" cy="46" r="1"/></g>`),
+  // 21 黑森林蛋糕
+  svg(wedge("#FFF7EE", "#3E2215", "#5A3A2A", `<g fill="#FFF7EE"><path d="M30 57 L66 71 V74 L30 60Z"/><path d="M30 65 L66 79 V82 L30 68Z"/></g>
+  <g fill="#3E2215"><path d="M72 66 l3 -2 l1 3z"/><path d="M80 58 l3 -2 l1 3z"/><path d="M88 54 l3 -2 l1 3z"/><path d="M76 74 l3 -2 l1 3z"/><path d="M86 66 l3 -2 l1 3z"/></g>
+  <ellipse cx="62" cy="46" rx="10" ry="4" fill="#FFFFFF"/><circle cx="62" cy="40" r="5.5" fill="#9B1B30"/><path d="M62 35 Q64 28 70 26" stroke="#4F7A33" stroke-width="1.6" fill="none"/>
+  <g fill="#4A2A1A"><rect x="44" y="45" width="5" height="2" rx="1"/><rect x="76" y="44" width="5" height="2" rx="1" transform="rotate(20 78 45)"/><rect x="52" y="51" width="4" height="2" rx="1"/></g>`)),
+  // 22 帕芙洛娃
+  svg(`<path d="M20 81 Q18 62 27 59 Q33 54 39 59 Q45 52 53 58 Q60 52 67 58 Q75 52 81 59 Q87 54 93 59 Q102 62 100 81 Q60 89 20 81Z" fill="#FFFDF8" stroke="#E6DFD1" stroke-width="1.4"/>
+  <ellipse cx="60" cy="58" rx="33" ry="7" fill="#FFF3DF"/>
+  <circle cx="72" cy="52" r="8" fill="#7DB348"/><circle cx="72" cy="52" r="5.5" fill="#B5DB78"/><g fill="#1D2A1A"><circle cx="72" cy="47.5" r=".9"/><circle cx="76" cy="52" r=".9"/><circle cx="72" cy="56.5" r=".9"/><circle cx="68" cy="52" r=".9"/></g>
+  <path d="M44 56 Q44 46 51 46 Q58 46 58 56Z" fill="#E5383B"/><path d="M51 46 L51 43" stroke="#4F8A3B" stroke-width="2"/>
+  <g fill="#3A4E8C"><circle cx="60" cy="56" r="3.4"/><circle cx="84" cy="57" r="3"/><circle cx="38" cy="58" r="3"/></g><circle cx="64" cy="49" r="2.8" fill="#C8273E"/>`),
+  // 23 薩赫蛋糕
+  svg(wedge("#3A1E12", "#5A3020", "#2E170D", `<path d="M30 60 L66 74 V76 L30 62Z" fill="#E89A3C"/><path d="M38 48 Q52 44 64 46" stroke="#7A4A33" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <circle cx="66" cy="48" r="5" fill="#24110A" stroke="#C9A24A" stroke-width="1.2"/>
+  <path d="M90 78 Q90 68 100 68 Q110 68 110 78 Q100 82 90 78Z" fill="#FFFFFF" stroke="#E3E3E3"/><path d="M95 72 Q100 66 105 72" stroke="#E8E8E8" fill="none"/>`)),
+  // 24 歐培拉
+  svg(`<path d="M100 46 L110 38 V77 L100 85Z" fill="#2A160C"/>
+  <rect x="18" y="46" width="82" height="5" fill="#2B160C"/><rect x="18" y="51" width="82" height="7" fill="#8A5A3B"/><rect x="18" y="58" width="82" height="5" fill="#C69C6D"/><rect x="18" y="63" width="82" height="5" fill="#3B2014"/><rect x="18" y="68" width="82" height="6" fill="#8A5A3B"/><rect x="18" y="74" width="82" height="5" fill="#C69C6D"/><rect x="18" y="79" width="82" height="6" fill="#7A4D30"/>
+  <path d="M18 46 L28 38 H110 L100 46Z" fill="#24120A"/><path d="M36 43 Q60 39 92 40" stroke="#5A3A28" stroke-width="1.6" fill="none"/>
+  <path d="M60 39.5 L66 38.5 L69 41 L64 43.5 L58 42.5Z" fill="#E5C158"/><path d="M71 40 L74 39.6 L75 41 L72 41.6Z" fill="#F0D57E"/>`),
+];
+const D = [
+  { name: "馬卡龍", en: "Macaron", from: "法國", fact: "用蛋白、杏仁粉和糖做成。外殼底部那一圈小小的皺邊，法文叫做「小腳」(pied)。" },
+  { name: "吉拿棒", en: "Churros", from: "西班牙", fact: "把麵糊擠進熱油裡炸成條狀。西班牙人常在早上把它沾熱巧克力吃。" },
+  { name: "銅鑼燒", en: "Dorayaki", from: "日本", fact: "兩片小鬆餅夾紅豆餡，形狀像樂器「銅鑼」。它是哆啦A夢最愛吃的點心。" },
+  { name: "可麗露", en: "Canelé", from: "法國・波爾多", fact: "用有溝紋的銅製模具烘烤。外皮焦脆，裡面像布丁一樣濕潤，帶有香草和蘭姆酒的香味。" },
+  { name: "千層派", en: "Mille-feuille", from: "法國", fact: "名字在法文是「一千片葉子」。酥皮經過很多次摺疊，烤好後會分成好多薄層。" },
+  { name: "檸檬塔", en: "Lemon Tart", from: "法國", fact: "塔皮裡裝滿用檸檬汁、蛋和奶油煮成的檸檬餡。酸酸甜甜，顏色是亮黃色。" },
+  { name: "抹茶瑞士捲", en: "Matcha Roll Cake", from: "日本", fact: "抹茶是把整片茶葉磨成的粉，所以吃抹茶就是把茶葉一起吃下去。" },
+  { name: "蒙布朗", en: "Mont Blanc", from: "法國・義大利", fact: "名字來自阿爾卑斯山最高的「白朗峰」。上面一條一條的是栗子泥，撒上糖粉就像山頂的雪。" },
+  { name: "葡式蛋塔", en: "Pastel de Nata", from: "葡萄牙・里斯本", fact: "最早由里斯本的修道院製作。表面一點一點的焦黑斑點，是用很高的溫度烤出來的。" },
+  { name: "瑪德蓮", en: "Madeleine", from: "法國", fact: "形狀像貝殼的小蛋糕。作家普魯斯特在小說裡寫過它，讓它變得非常有名。" },
+  { name: "練切", en: "Nerikiri", from: "日本", fact: "一種和菓子，用白豆沙和糯米粉做成。師傅會用小工具把它捏成當季的花朵。" },
+  { name: "舒芙蕾", en: "Soufflé", from: "法國", fact: "法文的意思是「膨起來」。打發的蛋白讓它在烤箱裡長高，但出爐幾分鐘就會慢慢塌下去。" },
+  { name: "果仁蜜餅", en: "Baklava", from: "土耳其", fact: "用幾十層像紙一樣薄的酥皮疊起來，中間夾開心果碎，烤好後淋上糖漿。" },
+  { name: "義式奶酪", en: "Panna Cotta", from: "義大利", fact: "義大利文的意思是「煮過的鮮奶油」。用吉利丁讓它凝固，搖一搖會輕輕晃動。" },
+  { name: "芒果糯米飯", en: "Mango Sticky Rice", from: "泰國", fact: "糯米拌上椰奶和一點點鹽，旁邊放切好的芒果。是泰國夏天很受歡迎的點心。" },
+  { name: "烤布蕾", en: "Crème Brûlée", from: "法國", fact: "表面撒糖，用火槍烤成一層硬硬的焦糖。用湯匙敲下去會發出「喀」的一聲。" },
+  { name: "草莓大福", en: "Strawberry Daifuku", from: "日本", fact: "軟軟的麻糬包著紅豆餡和一整顆草莓。這個口味在 1980 年代才出現，算是比較新的和菓子。" },
+  { name: "閃電泡芙", en: "Éclair", from: "法國", fact: "Éclair 在法文是「閃電」的意思。長條形的泡芙裡面填滿奶油餡，上面淋巧克力。" },
+  { name: "巴斯克乳酪蛋糕", en: "Basque Cheesecake", from: "西班牙", fact: "1990 年在西班牙聖塞巴斯提安的一家餐廳誕生。表面是故意烤焦的，裡面非常濕潤。" },
+  { name: "提拉米蘇", en: "Tiramisù", from: "義大利", fact: "義大利文的意思是「把我拉起來」。手指餅乾泡過咖啡，再和馬斯卡彭起司一層一層疊起來。" },
+  { name: "黑森林蛋糕", en: "Black Forest Cake", from: "德國", fact: "名字來自德國的黑森林地區。巧克力蛋糕、鮮奶油和櫻桃一層一層疊，上面撒巧克力碎片。" },
+  { name: "帕芙洛娃", en: "Pavlova", from: "澳洲・紐西蘭", fact: "用一位俄羅斯芭蕾舞者的名字命名。澳洲和紐西蘭到現在都說是自己先發明的。" },
+  { name: "薩赫蛋糕", en: "Sachertorte", from: "奧地利・維也納", fact: "1832 年由 16 歲的學徒法蘭茲・薩赫發明。巧克力蛋糕中間夾一層杏桃果醬。" },
+  { name: "歐培拉", en: "Opéra", from: "法國・巴黎", fact: "有咖啡蛋糕、奶油霜和巧克力共好幾層，表面常放一小片金箔，像巴黎歌劇院一樣華麗。" },
+];
+
+/* ---------- 找錯句 ---------- */
+// [影片原本的, 新的, 錯句, 理由]，每句是 [動詞, 名詞, 動詞中文, 名詞中文]
+const F = [
+  [["Chop", "the onions", "切碎", "洋蔥"], ["Chop", "the carrots", "切碎", "紅蘿蔔"], ["Chop", "the milk", "切碎", "牛奶"], "牛奶是液體，不能用刀切。"],
+  [["Fry", "the eggs", "煎", "蛋"], ["Fry", "the fish", "煎", "魚"], ["Fry", "the water", "煎", "水"], "水是液體，不能放在鍋子裡煎。"],
+  [["Flip", "the pancakes", "翻", "鬆餅"], ["Flip", "the burger", "翻", "漢堡肉"], ["Flip", "the soup", "翻", "湯"], "湯是液體，翻不過來。"],
+  [["Roast", "the chicken", "烤", "雞"], ["Roast", "the potatoes", "烤", "馬鈴薯"], ["Roast", "the ice", "烤", "冰塊"], "冰塊一烤就融化了。"],
+  [["Knead", "the dough", "揉", "麵團"], ["Knead", "the clay", "揉", "黏土"], ["Knead", "the juice", "揉", "果汁"], "果汁是液體，不能揉。"],
+  [["Squeeze", "a lemon", "擠", "一顆檸檬"], ["Squeeze", "an orange", "擠", "一顆柳橙"], ["Squeeze", "a stone", "擠", "一顆石頭"], "石頭太硬，擠不出汁。"],
+  [["Slice", "the bread", "切片", "麵包"], ["Slice", "the cheese", "切片", "起司"], ["Slice", "the water", "切片", "水"], "水是液體，切不成片。"],
+  [["Mash", "the potatoes", "搗成泥", "馬鈴薯"], ["Mash", "the bananas", "搗成泥", "香蕉"], ["Mash", "the spoon", "搗成泥", "湯匙"], "湯匙是金屬做的，搗不爛。"],
+  [["Crack", "the eggs", "敲開", "蛋"], ["Crack", "the nuts", "敲開", "堅果"], ["Crack", "the milk", "敲開", "牛奶"], "牛奶沒有殼，不用敲開。"],
+  [["Scale", "the fish", "刮魚鱗", "魚"], ["Scale", "the salmon", "刮魚鱗", "鮭魚"], ["Scale", "the apple", "刮魚鱗", "蘋果"], "蘋果沒有魚鱗。"],
+  [["Carve", "the turkey", "分切", "火雞"], ["Carve", "the pumpkin", "雕刻", "南瓜"], ["Carve", "the tea", "分切", "茶"], "茶是液體，不能切。"],
+  [["Whisk", "the eggs", "攪打", "蛋"], ["Whisk", "the cream", "攪打", "鮮奶油"], ["Whisk", "the carrots", "攪打", "紅蘿蔔"], "紅蘿蔔是硬的，打蛋器打不動。"],
+  [["Dice", "the apple", "切丁", "蘋果"], ["Dice", "the tomatoes", "切丁", "番茄"], ["Dice", "the soup", "切丁", "湯"], "湯是液體，切不成小塊。"],
+  [["Zest", "the lemons", "刨皮", "檸檬"], ["Zest", "the oranges", "刨皮", "柳橙"], ["Zest", "the milk", "刨皮", "牛奶"], "牛奶沒有皮可以刨。"],
+  [["Peel", "the orange", "剝", "柳橙"], ["Peel", "the banana", "剝", "香蕉"], ["Peel", "the rice", "剝", "白飯"], "白飯沒有皮可以剝。"],
+  [["Pour", "the water", "倒", "水"], ["Pour", "the milk", "倒", "牛奶"], ["Pour", "the bread", "倒", "麵包"], "麵包是固體，不能像水一樣倒出來。"],
+  [["Wash", "the vegetables", "洗", "蔬菜"], ["Wash", "the dishes", "洗", "碗盤"], ["Wash", "the sugar", "洗", "糖"], "糖一碰到水就溶化了。"],
+  [["Toast", "the bread", "烤", "麵包"], ["Toast", "the marshmallows", "烤", "棉花糖"], ["Toast", "the juice", "烤", "果汁"], "果汁是液體，不能放進烤麵包機。"],
+  [["Bake", "the cookies", "烤", "餅乾"], ["Bake", "the cake", "烤", "蛋糕"], ["Bake", "the ice cream", "烤", "冰淇淋"], "冰淇淋一烤就融化了。"],
+  [["Stir", "the coffee", "攪拌", "咖啡"], ["Stir", "the soup", "攪拌", "湯"], ["Stir", "the bread", "攪拌", "麵包"], "麵包是固體，不能用湯匙攪拌。"],
+  [["Grate", "the cheese", "磨", "起司"], ["Grate", "the carrots", "刨絲", "紅蘿蔔"], ["Grate", "the milk", "磨", "牛奶"], "牛奶是液體，不能磨。"],
+  [["Whip", "the cream", "打發", "鮮奶油"], ["Whip", "the egg whites", "打發", "蛋白"], ["Whip", "the bread", "打發", "麵包"], "麵包不會被打出泡泡。"],
+  [["Crush", "the garlic", "壓碎", "大蒜"], ["Crush", "the cookies", "壓碎", "餅乾"], ["Crush", "the soup", "壓碎", "湯"], "湯是液體，壓不碎。"],
+  [["Boil", "the water", "燒開", "水"], ["Boil", "the eggs", "煮", "蛋"], ["Boil", "the paper", "煮", "紙"], "紙不是食物，一煮就爛掉。"],
+];
+const fEn = (s) => `${s[0]} ${s[1]}.`;
+// 中文分別放在動詞和名詞下面
+const glossHTML = (s) => `<span class="gloss"><span><span class="ge v">${s[0]}</span><span class="gz">${s[2]}</span></span><span><span class="ge">${s[1]}.</span><span class="gz">${s[3]}</span></span></span>`;
+
+/* ---------- 儲存 ---------- */
+const KEY = "dessert-kitchen-v1";
+const MAX_STARS = 6;
+// info[n]: learned 學會日期, reviews 複習總次數, stars 星星（一天最多一顆，學會當天不算）, starDay 最後加星的日期, lastReview 最後複習日期
+function fresh() { return { learned: [], info: {}, log: [], outbox: [] }; }
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (!s) return null;
+    const n = fresh();
+    if (Array.isArray(s.learned)) n.learned = s.learned;
+    else if (typeof s.next === "number") n.learned = [...Array(s.next).keys()];
+    else return null;
+    n.outbox = s.outbox || [];
+    n.log = (s.log || []).filter((e) => e.n && e.kind);
+    n.learned.forEach((k) => {
+      const o = (s.info || {})[k] || {};
+      n.info[k] = typeof o.reviews === "number" ? o
+        : { learned: o.learned || "2000-01-01", reviews: o.perfect || 0, stars: Math.min(o.perfect || 0, MAX_STARS), starDay: "", lastReview: "" };
+    });
+    return n;
+  } catch (e) {}
+  return null;
+}
+let st = load() || fresh();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+function today() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+const isLearned = (n) => st.learned.includes(n);
+const starsOf = (n) => isLearned(n) ? Math.min(st.info[n].stars, MAX_STARS) : 0;
+const totalStars = () => st.learned.reduce((a, n) => a + starsOf(n), 0);
+const starStr = (k) => "★".repeat(k);
+
+/* ---------- 小工具 ---------- */
+const app = document.getElementById("app");
+const $ = (s, r = app) => r.querySelector(s);
+const $$ = (s, r = app) => [...r.querySelectorAll(s)];
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const PLAY = '<svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="40" fill="rgba(255,255,255,.92)"/><path d="M34 26 L60 42 L34 58Z" fill="#1E6B66"/></svg>';
+function speak(w) {
+  try {
+    const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) {}
+}
+// 先念完再執行 cb；念不出來或 onend 沒觸發時，用計時器保底
+function speakThen(w, cb) {
+  let done = false;
+  const fin = () => { if (!done) { done = true; cb(); } };
+  setTimeout(fin, Math.max(900, w.length * 110));
+  try {
+    const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.8;
+    u.onend = fin; u.onerror = fin;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) { fin(); }
+}
+function enHTML(n, tappable = false) {
+  const ws = wordsOf(n);
+  return ws.map((w, i) => {
+    const txt = w + (i === ws.length - 1 ? "." : "");
+    const inner = i === 2 ? `<span class="v">${txt}</span>` : txt;
+    return tappable ? `<button class="w" data-i="${i}">${inner}</button>` : inner;
+  }).join(" ");
+}
+function zhHTML(n) { const s = S[n]; return s.zh.replace(s.zv, `<span class="v">${s.zv}</span>`); }
+function meaningOf(n, i) {
+  const s = S[n];
+  if (i === 0) return "我";
+  if (i === 1) return "是（I am ＋ 動詞-ing ＝ 我正在⋯）";
+  if (i === 2) return s.zv;
+  return s.om[i - 3] || "";
+}
+function wireWords(n) {
+  $$(".w").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.i, w = wordsOf(n)[i];
+    speak(w);
+    $("#mean").innerHTML = `<b>${w}</b> ＝ ${meaningOf(n, i)}`;
+  });
+}
+
+/* ---------- 影片（要不要播放由孩子決定） ---------- */
+let curVideo = null;
+function videoHTML(n) {
+  const src = `videos/${String(n + 1).padStart(2, "0")}.mp4`;
+  return `<div class="vid"><video src="${src}#t=0.6" playsinline preload="metadata"></video>
+    <button class="cover" aria-label="播放影片">${PLAY}</button></div>`;
+}
+// onWatched：從頭看到最後才呼叫；影片載入失敗也呼叫，避免卡住
+function wireVideo(onWatched) {
+  const v = $("video"); if (!v) return;
+  curVideo = v;
+  const box = v.closest(".vid");
+  const play = () => {
+    try { v.pause(); v.currentTime = 0; } catch (e) {}
+    const p = v.play(); if (p && p.catch) p.catch(() => {});
+  };
+  v.addEventListener("playing", () => box.classList.add("playing"));
+  v.addEventListener("pause", () => box.classList.remove("playing"));
+  v.addEventListener("ended", () => { box.classList.remove("playing"); if (onWatched) onWatched(); });
+  v.addEventListener("error", () => onWatched && onWatched());
+  if (onWatched) setTimeout(() => { if (curVideo === v && v.readyState === 0) onWatched(); }, 15000);
+  $(".cover").onclick = play;
+  v.onclick = play;
+}
+function stopVideo() { try { curVideo && curVideo.pause(); } catch (e) {} curVideo = null; }
+
+/* ---------- 首頁：集點卡 ---------- */
+function header() {
+  return `<div class="top"><div class="brand"><h1>甜點廚房</h1><span>English Kitchen</span></div>
+    <button class="chip" id="toShelf">我的點心櫃 <b>${st.learned.length}/24</b> <b style="color:var(--gold)">★${totalStars()}</b></button></div>`;
+}
+function cellHTML(n) {
+  const t = today();
+  if (!isLearned(n)) return `<div class="cell"><button class="stamp" data-n="${n}" aria-label="學第 ${n + 1} 句">${n + 1}</button><span class="stars"></span><span class="today"></span></div>`;
+  const I = st.info[n];
+  const tags = [I.learned === t ? `<span class="today new">今天新句</span>` : "", I.lastReview === t ? `<span class="today">今天複習</span>` : ""].join("");
+  return `<div class="cell"><button class="stamp got" data-n="${n}" aria-label="${D[n].name}">${ART[n]}</button>
+    <span class="stars" aria-label="${starsOf(n)} 顆星">${starStr(starsOf(n))}</span>${tags || `<span class="today"></span>`}</div>`;
+}
+function home() {
+  stopVideo();
+  L = null;
+  const left = 24 - st.learned.length;
+  app.innerHTML = header() + `<div class="card">
+      <div class="row" style="justify-content:space-between"><h3>集點卡</h3><span class="qcount">${st.learned.length} / 24　★ ${totalStars()}</span></div>
+      <p class="small">按<b>數字格子</b>：學新句子。按<b>點心</b>：看介紹、複習。${left === 0 ? "24 句都學會了，可以繼續複習集星星！" : ""}</p>
+      <div class="stamps">${[...Array(24).keys()].map(cellHTML).join("")}</div>
+      <p class="muted small">每一句都是：看影片 → 選選看 → 排句子 → 找錯句。學會新句子得到一個點心；在不同的日子複習，每天可以加一顆 ★，最多 ${MAX_STARS} 顆。</p>
+    </div>
+    <div class="foot row" style="justify-content:center">${st.learned.length ? `<button class="linkish" id="toReview">學過的句子</button>` : ""}<button class="linkish" id="toParent">家長區</button></div>`;
+  $("#toShelf").onclick = shelf;
+  $$(".stamp[data-n]").forEach((b) => b.onclick = () => {
+    const n = +b.dataset.n;
+    if (isLearned(n)) showDessert(n); else startItem(n, "new");
+  });
+  const rv = $("#toReview"); if (rv) rv.onclick = review;
+  $("#toParent").onclick = parentGate;
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 一句的流程（新句子和複習一樣）：看影片 → 選選看 → 排句子 → 找錯句 ---------- */
+const STEP_NAMES = ["看影片", "選選看", "排句子", "找錯句"];
+let L = null;
+function startItem(n, kind) {
+  L = { n, kind, step: 0, qi: 0, qs: [], mistakes: 0, start: Date.now() };
+  runStep();
+}
+function lessonShell(body) {
+  const rail = STEP_NAMES.map((nm, i) => {
+    const c = i < L.step ? "done" : i === L.step ? "now" : "";
+    return `<div class="${c}"><span class="n">${i < L.step ? "✓" : i + 1}</span>${nm}</div>`;
+  }).join("");
+  const tag = L.kind === "new" ? `<span class="tag new">新句子</span>` : `<span class="tag">複習</span>`;
+  app.innerHTML = `<div class="top"><div class="brand"><h1>第 ${L.n + 1} 句</h1>${tag}</div>
+    <button class="chip" id="rest">休息一下</button></div>
+    <div class="rail" style="grid-template-columns:repeat(4,1fr)">${rail}</div>${body}`;
+  $("#rest").onclick = home;
+  window.scrollTo(0, 0);
+}
+function pickOthers(n, k) {
+  const known = shuffle(st.learned.filter((i) => i !== n));
+  const rest = shuffle([...Array(24).keys()].filter((i) => i !== n && !known.includes(i)));
+  return [...known, ...rest].slice(0, k);
+}
+function runStep() {
+  stopVideo();
+  [watch, quiz, build, findWrong, itemDone][L.step]();
+}
+function nextStep() { L.step++; runStep(); }
+
+function watch() {
+  const n = L.n;
+  lessonShell(`<div class="card">
+    <p class="ask">請播放影片</p>
+    ${videoHTML(n)}
+    <div class="subs"><p class="en">${enHTML(n, true)}</p><p class="zh">${zhHTML(n)}</p></div>
+    <p class="meaning" id="mean">按一下英文單字，可以聽發音、看意思</p>
+    <div class="note"><b>I am ＋ 動詞-ing</b> ＝ 我正在做某件事。${TIPS[n] ? "<br>" + TIPS[n] : ""}</div>
+    <p class="muted small" id="wait">按影片中間的播放鍵，看完一次就會出現下一步。</p>
+    <button class="btn big" id="go" hidden>下一步：選選看</button>
+  </div>`);
+  wireVideo(() => { const g = $("#go"); if (g && g.hidden) { g.hidden = false; $("#wait").hidden = true; } });
+  wireWords(n);
+  $("#go").onclick = nextStep;
+}
+
+function quiz() {
+  const n = L.n;
+  L.qi = 0;
+  L.qs = shuffle([
+    { type: "vid", n, opts: shuffle([n, ...pickOthers(n, 1)]) },
+    { type: "zh", n, opts: shuffle([n, ...pickOthers(n, 1)]) },
+  ]);
+  question();
+}
+function question() {
+  const q = L.qs[L.qi];
+  const total = L.qs.length;
+  const prompt = q.type === "vid" ? "看畫面，他正在做什麼？" : "哪一句英文是這個意思？";
+  const media = q.type === "zh" ? `<div class="subs"><p class="zh">${zhHTML(q.n)}</p></div>` : videoHTML(q.n);
+  const opt = (k) => q.type === "vid"
+    ? `<button class="opt" data-k="${k}"><span class="oe">${S[k].v}</span><span class="oz">${S[k].zv}</span></button>`
+    : `<button class="opt sent" data-k="${k}"><span class="oe">${enHTML(k)}</span></button>`;
+  lessonShell(`<div class="card">
+    <div class="row" style="justify-content:space-between"><p class="ask">${prompt}</p><span class="qcount">${L.qi + 1} / ${total}</span></div>
+    ${media}
+    <div class="opts two">${q.opts.map(opt).join("")}</div>
+    <p class="fb" id="fb"></p>
+    <button class="btn big" id="next" hidden>${L.qi + 1 < total ? "下一題" : "下一步：排句子"}</button>
+  </div>`);
+  wireVideo();
+  let busy = false;
+  $$(".opt").forEach((b) => b.onclick = () => {
+    if (busy || b.classList.contains("no") || !$("#next").hidden) return;
+    const k = +b.dataset.k;
+    busy = true;
+    b.classList.add("glow");
+    speakThen(q.type === "vid" ? S[k].v : enOf(k), () => {
+      busy = false;
+      b.classList.remove("glow");
+      const fb = $("#fb");
+      if (k === q.n) {
+        b.classList.add("yes");
+        fb.className = "fb good"; fb.textContent = "答對了！";
+        $("#next").hidden = false; $("#next").focus();
+      } else {
+        L.mistakes++;
+        b.classList.add("no");
+        fb.className = "fb try";
+        fb.textContent = q.type === "zh" ? "沒關係，看看橘色的字，再選一次。" : "沒關係，可以播影片看看，再選一次。";
+      }
+    });
+  });
+  $("#next").onclick = () => {
+    L.qi++;
+    if (L.qi < L.qs.length) question(); else nextStep();
+  };
+}
+
+function build() {
+  const n = L.n;
+  const words = wordsOf(n);
+  let order = shuffle(words.map((_, i) => i));
+  if (order.every((v, i) => v === i)) order = order.reverse();
+  let placed = 0;
+  lessonShell(`<div class="card">
+    <p class="ask">照順序按字卡，排出句子</p>
+    ${videoHTML(n)}
+    <div class="slots" id="slots">${words.map(() => `<span class="slot"></span>`).join("")}</div>
+    <div class="tiles">${order.map((i) => `<button class="tile" data-i="${i}">${words[i]}</button>`).join("")}</div>
+    <p class="fb" id="fb"></p>
+    <div class="row"><button class="btn ghost" id="hint">給我提示</button></div>
+    <button class="btn big" id="next" hidden>下一步：找錯句</button>
+  </div>`);
+  wireVideo();
+  const fb = $("#fb");
+  let busy = false;
+  $$(".tile").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.i;
+    if (busy || placed >= words.length || b.classList.contains("used")) return;
+    busy = true;
+    speakThen(words[i], () => {
+      busy = false;
+      if (words[i] === words[placed]) {
+        $(".slot").outerHTML = `<span class="placed">${i === 2 ? `<span class="v">${words[i]}</span>` : words[i]}${placed === words.length - 1 ? "." : ""}</span>`;
+        b.classList.add("used"); $$(".tile").forEach((t) => t.classList.remove("glow"));
+        placed++;
+        fb.className = "fb"; fb.textContent = "";
+        if (placed === words.length) {
+          fb.className = "fb good"; fb.textContent = "全部排對了！";
+          $(".tiles").hidden = true; $("#hint").hidden = true;
+          $("#next").hidden = false;
+        }
+      } else {
+        L.mistakes++;
+        b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+        fb.className = "fb try"; fb.textContent = "不是這個字。可以播影片聽聽看，或按「給我提示」。";
+      }
+    });
+  });
+  $("#hint").onclick = () => {
+    const t = $$(".tile").find((t) => !t.classList.contains("used") && words[+t.dataset.i] === words[placed]);
+    if (t) t.classList.add("glow");
+  };
+  $("#next").onclick = nextStep;
+}
+
+// 找錯句：選錯不計入選錯次數
+function findWrong() {
+  const [a, b, bad, why] = F[L.n];
+  const opts = shuffle([{ s: a, bad: false }, { s: b, bad: false }, { s: bad, bad: true }]);
+  lessonShell(`<div class="card">
+    <p class="ask">找錯句：哪一句是錯的？</p>
+    <p class="muted">三件事裡，有一件做不到。</p>
+    <div class="opts">${opts.map((o, i) => `<button class="opt find" data-i="${i}">${glossHTML(o.s)}</button>`).join("")}</div>
+    <p class="fb" id="fb"></p>
+    <p class="why" id="why" hidden></p>
+    <button class="btn big" id="next" hidden>完成這一句</button>
+  </div>`);
+  $$(".opt").forEach((btn) => btn.onclick = () => {
+    if (btn.classList.contains("no") || !$("#next").hidden) return;
+    const o = opts[+btn.dataset.i];
+    const fb = $("#fb");
+    if (o.bad) {
+      btn.classList.add("found");
+      fb.className = "fb good"; fb.textContent = "對！這句是錯句。";
+      $("#why").textContent = why; $("#why").hidden = false;
+      speak(fEn(o.s));
+      $("#next").hidden = false; $("#next").focus();
+    } else {
+      btn.classList.add("no");
+      fb.className = "fb try"; fb.textContent = "這句是對的，這件事做得到。再看看另外兩句。";
+      speak(fEn(o.s));
+    }
+  });
+  $("#next").onclick = nextStep;
+}
+
+function itemDone() {
+  const { n, kind } = L;
+  const t = today();
+  const secs = Math.round((Date.now() - L.start) / 1000);
+  stopVideo();
+  if (kind === "new" && !isLearned(n)) {
+    st.learned.push(n);
+    st.info[n] = { learned: t, reviews: 0, stars: 0, starDay: "", lastReview: "" };
+    st.log.push({ kind: "new", n: n + 1, date: t, secs, mistakes: L.mistakes });
+    save();
+    sendReport("new", n, secs, L.mistakes, false);
+    L = null;
+    app.innerHTML = dessertCard(n, "pop");
+    $("#ok").onclick = home;
+    window.scrollTo(0, 0);
+    return;
+  }
+  const I = st.info[n];
+  I.reviews++;
+  I.lastReview = t;
+  let star = false;
+  if (I.learned !== t && I.starDay !== t) { I.stars++; I.starDay = t; star = I.stars <= MAX_STARS; }
+  st.log.push({ kind: "rev", n: n + 1, date: t, secs, mistakes: L.mistakes });
+  save();
+  sendReport("review", n, secs, L.mistakes, star);
+  L = null;
+  const why = I.learned === t ? "今天剛學會的句子，明天再複習才會加星星。" : !star && I.starDay === t && I.stars <= MAX_STARS ? "今天已經加過星星了，明天再複習可以再加一顆。" : "";
+  app.innerHTML = `<div class="card reveal ${star ? "pop" : ""}">
+    <p class="muted">複習完成</p>
+    ${ART[n]}
+    <div class="subs"><p class="en">${enHTML(n)}</p><p class="zh">${zhHTML(n)}</p></div>
+    ${star ? `<p class="starline">得到一顆星星！</p>` : ""}
+    <p class="starline">${starStr(starsOf(n)) || "（還沒有星星）"}</p>
+    <p class="muted">這句已經複習 ${I.reviews} 次。${why}</p>
+    <button class="btn big" id="ok">回集點卡</button>
+  </div>`;
+  $("#ok").onclick = home;
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 點心 ---------- */
+function dessertCard(i, mode) {
+  const d = D[i];
+  const pop = mode === "pop";
+  const I = st.info[i];
+  return `<div class="card reveal ${pop ? "pop" : ""}">
+    ${pop ? `<p class="muted">集點卡蓋了第 ${i + 1} 格，你得到：</p>` : ""}
+    ${ART[i]}
+    <div><p class="dname">${d.name}</p><p class="dname-en">${d.en}</p></div>
+    <div class="facts"><div><b>來自</b>${d.from}</div><div><b>小知識</b>${d.fact}</div><div><b>學到的句子</b><span style="font-family:var(--f-en);font-weight:600">${enHTML(i)}</span></div>
+    ${!pop && I ? `<div><b>複習</b>${I.reviews} 次　<span class="starline" style="font-size:17px">${starStr(starsOf(i))}</span></div>` : ""}</div>
+    ${pop ? `<button class="btn big" id="ok">回集點卡</button>` : `<div class="btn2"><button class="btn ghost" id="ok">關閉</button><button class="btn" id="rev">複習</button></div>`}
+  </div>`;
+}
+function showDessert(i) {
+  const ov = document.createElement("div");
+  ov.className = "overlay";
+  ov.innerHTML = dessertCard(i, "view");
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.querySelector("#ok").onclick = close;
+  ov.querySelector("#rev").onclick = () => { close(); startItem(i, "rev"); };
+  ov.onclick = (e) => { if (e.target === ov) close(); };
+}
+function shelf() {
+  stopVideo();
+  L = null;
+  app.innerHTML = `<div class="top"><div class="brand"><h1>我的點心櫃</h1><span>${st.learned.length} / 24　★ ${totalStars()}</span></div>
+    <button class="chip" id="back">回首頁</button></div>
+    <div class="shelf">${D.map((d, i) => isLearned(i)
+      ? `<button class="dess" data-i="${i}">${ART[i]}<span class="dn">${d.name}</span><span class="stars" style="color:var(--gold);font-size:13px">${starStr(starsOf(i))}</span></button>`
+      : `<div class="dess locked"><span class="q">?</span><span class="dn">第 ${i + 1} 句</span></div>`).join("")}</div>`;
+  $("#back").onclick = home;
+  $$(".dess[data-i]").forEach((b) => b.onclick = () => showDessert(+b.dataset.i));
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 學過的句子 ---------- */
+function review() {
+  stopVideo();
+  const list = st.learned.slice().sort((a, b) => a - b);
+  app.innerHTML = `<div class="top"><div class="brand"><h1>學過的句子</h1><span>${list.length} / 24</span></div>
+    <button class="chip" id="back">回首頁</button></div>
+    <div class="list">${list.map((i) => `<button data-i="${i}"><span class="num">${i + 1}</span><span class="ls">${enHTML(i)}</span><span class="starline" style="margin-left:auto;font-size:14px">${starStr(starsOf(i))}</span></button>`).join("")}</div>`;
+  $("#back").onclick = home;
+  $$(".list button").forEach((b) => b.onclick = () => reviewOne(+b.dataset.i));
+  window.scrollTo(0, 0);
+}
+function reviewOne(n) {
+  stopVideo();
+  const list = st.learned.slice().sort((a, b) => a - b);
+  const pos = list.indexOf(n);
+  app.innerHTML = `<div class="top"><div class="brand"><h1>學過的句子</h1><span>${pos + 1} / ${list.length}</span></div>
+    <button class="chip" id="back">回列表</button></div>
+    <div class="card">${videoHTML(n)}
+      <div class="subs"><p class="en">${enHTML(n, true)}</p><p class="zh">${zhHTML(n)}</p></div>
+      <p class="meaning" id="mean">按一下英文單字，可以聽發音、看意思</p>
+      <div class="row"><button class="btn ghost" id="prev" ${pos === 0 ? "disabled" : ""}>上一句</button><button class="btn ghost" id="nxt" ${pos + 1 >= list.length ? "disabled" : ""}>下一句</button></div>
+    </div>`;
+  wireVideo();
+  wireWords(n);
+  $("#back").onclick = review;
+  $("#prev").onclick = () => reviewOne(list[pos - 1]);
+  $("#nxt").onclick = () => reviewOne(list[pos + 1]);
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 寄信通知：新句和複習每一句都寄 ---------- */
+function sendReport(kind, n, secs, mistakes, star) {
+  if (!REPORT_URL) return;
+  const I = st.info[n];
+  st.outbox = st.outbox || [];
+  st.outbox.push({
+    token: REPORT_TOKEN, kind, date: today(), n: n + 1, sentence: enOf(n), zh: S[n].zh,
+    dessert: D[n].name, dessertEn: D[n].en, minutes: Math.round(secs / 6) / 10, mistakes,
+    reviews: I.reviews, stars: starsOf(n), newStar: star, collected: st.learned.length, totalStars: totalStars(),
+  });
+  save();
+  flushReports();
+}
+// 沒有網路時先存起來，下次打開網頁再寄
+let flushing = false;
+async function flushReports() {
+  if (!REPORT_URL || flushing || !st.outbox || !st.outbox.length) return;
+  flushing = true;
+  while (st.outbox.length) {
+    try {
+      await postReport(st.outbox[0]);
+      st.outbox.shift(); save();
+    } catch (e) { break; }
+  }
+  flushing = false;
+}
+function postReport(body) {
+  // Apps Script 不回傳 CORS 標頭，所以用 no-cors；只有網路失敗時才會進到 catch
+  return fetch(REPORT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) });
+}
+window.addEventListener("online", flushReports);
+
+/* ---------- 家長區 ---------- */
+function parentGate() {
+  stopVideo();
+  app.innerHTML = `<div class="top"><div class="brand"><h1>家長區</h1></div><button class="chip" id="back">回首頁</button></div>
+    <div class="card"><p>請家長回答：<b style="font-family:var(--f-en)">6 × 7 − 5 =</b></p>
+    <div class="row"><input id="ans" type="number" inputmode="numeric" aria-label="答案"><button class="btn" id="enter">進入</button></div><p class="fb" id="fb"></p></div>`;
+  $("#back").onclick = home;
+  $("#enter").onclick = () => { if ($("#ans").value.trim() === "37") parent(); else { $("#fb").className = "fb try"; $("#fb").textContent = "答案不對。"; } };
+}
+function parent(confirmReset = false) {
+  const rows = st.log.slice().reverse().map((e) => `<tr><td>${e.date}</td><td>${e.kind === "rev" ? "複習" : "新句"}</td><td>第 ${e.n} 句 ${S[e.n - 1].v}</td><td>${Math.max(1, Math.round(e.secs / 60))} 分</td><td>${e.mistakes}</td></tr>`).join("");
+  app.innerHTML = `<div class="top"><div class="brand"><h1>家長區</h1></div><button class="chip" id="back">回首頁</button></div>
+    <div class="card"><h3>學習紀錄</h3>
+      <p class="muted small">已學會 ${st.learned.length} / 24 句，星星共 ${totalStars()} 顆。紀錄只存在這台裝置上。選錯次數包含選選看和排句子，不含找錯句。</p>
+      <div class="tbl"><table><thead><tr><th>日期</th><th>類型</th><th>句子</th><th>時間</th><th>選錯</th></tr></thead><tbody>${rows || `<tr><td colspan="5" class="muted">還沒有紀錄</td></tr>`}</tbody></table></div>
+    </div>
+    <div class="card"><h3>完成通知</h3>
+      <p class="small">${REPORT_URL ? `每完成一句（新句或複習），會自動通知 ${REPORT_TO}。` : `尚未設定寄信網址，目前不會寄出通知。`}</p>
+      ${st.outbox && st.outbox.length ? `<p class="small muted">有 ${st.outbox.length} 封通知等網路恢復後寄出。</p>` : ""}
+      ${REPORT_URL ? `<div class="row"><button class="btn ghost" id="testMail">寄一封測試信</button></div><p class="fb" id="mailFb"></p>` : ""}</div>
+    <div class="card"><h3>重設</h3>
+      <div class="row"><button class="btn ghost" id="reset">${confirmReset ? "再按一次，確定清除全部進度" : "清除全部進度"}</button></div></div>`;
+  $("#back").onclick = home;
+  const tm = $("#testMail");
+  if (tm) tm.onclick = () => {
+    tm.disabled = true;
+    postReport({ token: REPORT_TOKEN, kind: "test", date: today(), collected: st.learned.length })
+      .then(() => { $("#mailFb").className = "fb good"; $("#mailFb").textContent = `已送出，請到 ${REPORT_TO} 收信（可能要等 1 分鐘）。`; })
+      .catch(() => { $("#mailFb").className = "fb try"; $("#mailFb").textContent = "送不出去，請確認 iPad 有連上網路。"; tm.disabled = false; });
+  };
+  $("#reset").onclick = () => {
+    if (!confirmReset) return parent(true);
+    st = fresh(); save(); home();
+  };
+}
+
+home();
+flushReports();
+</script>
+</body>
+</html>
